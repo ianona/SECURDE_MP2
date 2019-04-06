@@ -13,7 +13,6 @@ import java.util.Date;
 
 
 public class Main {
-    
     public SQLite sqlite;
     
     public static void main(String[] args) {

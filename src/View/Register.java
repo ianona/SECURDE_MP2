@@ -1,12 +1,14 @@
-
 package View;
+
+import Controller.SQLite;
 
 public class Register extends javax.swing.JPanel {
 
     public Frame frame;
-    
+
     public Register() {
         initComponents();
+        errorLbl.setVisible(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -14,11 +16,12 @@ public class Register extends javax.swing.JPanel {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
-        password = new javax.swing.JTextField();
+        password = new javax.swing.JPasswordField();
         username = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        confpass = new javax.swing.JTextField();
+        confpass = new javax.swing.JPasswordField();
         jButton2 = new javax.swing.JButton();
+        errorLbl = new javax.swing.JLabel();
 
         jButton1.setBackground(new java.awt.Color(255, 255, 255));
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -33,6 +36,11 @@ public class Register extends javax.swing.JPanel {
         password.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         password.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true), "PASSWORD", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        password.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordActionPerformed(evt);
+            }
+        });
 
         username.setBackground(new java.awt.Color(240, 240, 240));
         username.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -58,6 +66,10 @@ public class Register extends javax.swing.JPanel {
             }
         });
 
+        errorLbl.setForeground(new java.awt.Color(255, 0, 0));
+        errorLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        errorLbl.setText("jLabel2");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -68,7 +80,8 @@ public class Register extends javax.swing.JPanel {
                     .addComponent(username)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(password, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(confpass, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(confpass, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(errorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(200, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -86,7 +99,9 @@ public class Register extends javax.swing.JPanel {
                 .addComponent(jButton2)
                 .addGap(24, 24, 24)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(errorLbl)
+                .addGap(12, 12, 12)
                 .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -99,17 +114,123 @@ public class Register extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        frame.registerAction(username.getText(), password.getText(), confpass.getText());
-        frame.loginNav();
+        //checks the validation of the password and confirmation
+        SQLite database = new SQLite();
+        int correct = 0;
+        boolean hasUppercase = !password.getText().equals(password.getText().toLowerCase());
+        boolean hasLowercase = !password.getText().equals(password.getText().toUpperCase());
+        boolean isAtLeast8 = password.getText().length() >= 8;
+        boolean hasSpecial = !password.getText().matches("[A-Za-z0-9 ]*");
+        boolean hasNumber = password.getText().matches(".*\\d+.*");
+
+        if (database.getUsersByUsername(username.getText()).isEmpty()) {
+            // checks if both username and password are not empty
+            if (password.getText().isEmpty() || username.getText().isEmpty()) {
+                errorLbl.setText("Error! Username and password cannot be empty");
+                errorLbl.setVisible(true);
+            } else {
+                correct = correct + 1;
+            }
+
+            //checks if the password is same as the confirmation password
+            if (password.getText().equals(confpass.getText())) {
+                correct = correct + 1;
+            } else {
+                System.out.println("NOT SAME PASSWORD");
+                errorLbl.setText("Error! Passwords are not the same");
+                errorLbl.setVisible(true);
+            }
+
+            //checks if the passsword field is empty
+            if (!password.getText().equals("")) {
+                correct = correct + 1;
+
+            } else {
+                System.out.println("EMPTY");
+                errorLbl.setText("Error! Password cannot be empty");
+                errorLbl.setVisible(true);
+            }
+
+            //checks if has 1 upper case letter
+            if (hasUppercase) {
+                correct = correct + 1;
+            } else {
+                System.out.println("NO UPPER CASE");
+                errorLbl.setText("Error! Password requires at least 1 uppercase character");
+                errorLbl.setVisible(true);
+            }
+
+            //checks if has 1 lower case letter
+            if (hasLowercase) {
+                correct = correct + 1;
+            } else {
+                System.out.println("NO LOWER CASE");
+                errorLbl.setText("Error! Password requires at least 1 lowercase character");
+                errorLbl.setVisible(true);
+            }
+
+            //check if it has at least 8 characters
+            if (isAtLeast8) {
+                correct = correct + 1;
+            } else {
+                System.out.println("NOT MORE THAN 8 CHAR");
+                errorLbl.setText("Error! Password requires at least 8 characters");
+                errorLbl.setVisible(true);
+            }
+
+            //check if it has number
+            if (hasNumber) {
+                correct = correct + 1;
+            } else {
+                System.out.println("NO NUMBER");
+                errorLbl.setText("Error! Password requires at least 1 number");
+                errorLbl.setVisible(true);
+            }
+
+            //check if it has special characters
+            if (hasSpecial) {
+                correct = correct + 1;
+            } else {
+                System.out.println("NOT SPECIAL");
+                errorLbl.setText("Error! Password requires at least 1 special character");
+                errorLbl.setVisible(true);
+            }
+
+            //if all of the condition checks, it stores the password
+            if (correct == 8) {
+                errorLbl.setVisible(false);
+                frame.registerAction(username.getText(), password.getText(), confpass.getText());
+                frame.loginNav();
+                username.setText("");
+                password.setText("");
+                confpass.setText("");
+            } else {
+                System.out.println(correct);
+            }
+        } else {
+            System.out.println("CHOOSE UNIQUE USERNAME");
+            errorLbl.setText("Username is taken");
+            errorLbl.setVisible(true);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        errorLbl.setVisible(false);
+        username.setText("");
+        password.setText("");
+        confpass.setText("");
         frame.loginNav();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField confpass;
+    private javax.swing.JLabel errorLbl;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;

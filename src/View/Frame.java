@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Main;
+import Model.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -214,6 +215,8 @@ public class Frame extends javax.swing.JFrame {
     private CardLayout contentView = new CardLayout();
     private CardLayout frameView = new CardLayout();
     
+    private User curUser;
+    
     public void init(Main controller){
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setTitle("SECURDE - SECURITY Svcs");
@@ -243,7 +246,25 @@ public class Frame extends javax.swing.JFrame {
         this.setVisible(true);
     }
     
-    public void mainNav(){
+    public void mainNav(User user){
+        setAllButtonsVisibility(false);
+        curUser = user;
+        if (user.getRole() == 5){
+            adminBtn.setVisible(true);
+            contentView.show(Content, "adminHomePnl");
+        }
+        if (user.getRole() == 4){
+            managerBtn.setVisible(true);
+            contentView.show(Content, "managerHomePnl");
+        }
+        if (user.getRole() == 3){
+            staffBtn.setVisible(true);
+            contentView.show(Content, "staffHomePnl");
+        }
+        if (user.getRole() == 2){
+            clientBtn.setVisible(true);
+            contentView.show(Content, "clientHomePnl");
+        }
         frameView.show(Container, "homePnl");
     }
     
@@ -257,6 +278,20 @@ public class Frame extends javax.swing.JFrame {
     
     public void registerAction(String username, String password, String confpass){
         main.sqlite.addUser(username, password);
+    }
+    
+    public void setAllButtonsVisibility(Boolean bool){
+        adminBtn.setVisible(bool);
+        clientBtn.setVisible(bool);
+        managerBtn.setVisible(bool);
+        staffBtn.setVisible(bool);
+    }
+    
+    public void setAllPanelsVisibility(Boolean bool){
+        adminBtn.setVisible(bool);
+        clientBtn.setVisible(bool);
+        managerBtn.setVisible(bool);
+        staffBtn.setVisible(bool);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
