@@ -28,6 +28,11 @@ public class SQLite {
     public int DEBUG_MODE = 0;
     String driverURL = "jdbc:sqlite:" + "database.db";
 //    private Logger logger;
+    
+    public SQLite(){
+        SecurityConfig.readDebugMode(this);
+//        System.out.println(DEBUG_MODE + " Debug mode");
+    }
 
     public User toUser(ResultSet rs) throws SQLException {
         return new User(rs.getInt("id"),

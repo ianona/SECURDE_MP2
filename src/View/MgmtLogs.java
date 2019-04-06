@@ -6,6 +6,7 @@
 package View;
 
 import Controller.SQLite;
+import Controller.SecurityConfig;
 import Model.Logs;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -203,9 +204,13 @@ public class MgmtLogs extends javax.swing.JPanel {
 
     private void debugBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_debugBtnActionPerformed
         if (sqlite.DEBUG_MODE == 1) {
+//            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
             sqlite.DEBUG_MODE = 0;
+            SecurityConfig.updateConfig(0);
         } else {
+//            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
             sqlite.DEBUG_MODE = 1;
+            SecurityConfig.updateConfig(1);
         }
     }//GEN-LAST:event_debugBtnActionPerformed
 

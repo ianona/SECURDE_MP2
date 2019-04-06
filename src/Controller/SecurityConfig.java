@@ -5,11 +5,18 @@
  */
 package Controller;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -59,22 +66,22 @@ public class SecurityConfig {
         //checks if the password is same as the confirmation password
         if (!password.equals(confpass)) {
             errors.add("Error! Passwords are not the same");
-        } 
+        }
         //checks if has 1 upper case letter
         if (!hasUppercase) {
             System.out.println("NO UPPER CASE");
             errors.add("Error! Password requires at least 1 uppercase character");
-        } 
+        }
         //checks if has 1 lower case letter
         if (!hasLowercase) {
             System.out.println("NO LOWER CASE");
             errors.add("Error! Password requires at least 1 lowercase character");
-        } 
+        }
         //check if it has at least 8 characters
         if (!isAtLeast8) {
             System.out.println("NOT MORE THAN 8 CHAR");
             errors.add("Error! Password requires at least 8 characters");
-        } 
+        }
         //check if it has number
         if (!hasNumber) {
             System.out.println("NO NUMBER");
@@ -84,7 +91,49 @@ public class SecurityConfig {
         if (!hasSpecial) {
             System.out.println("NOT SPECIAL");
             errors.add("Error! Password requires at least 1 special character");
-        } 
+        }
         return errors;
     }
+
+    public static void readDebugMode(SQLite sql) {
+        BufferedReader csvReader = null;
+        try {
+            String row;
+            csvReader = new BufferedReader(new FileReader("./config.csv"));
+            while ((row = csvReader.readLine()) != null) {
+                String[] data = row.split(",");
+                sql.DEBUG_MODE = Integer.parseInt(data[1]);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                csvReader.close();
+            } catch (IOException ex) {
+                Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public static void updateConfig(int debugMode) {
+        FileWriter csvWriter = null;
+        try {
+            csvWriter = new FileWriter("./config.csv");
+            csvWriter.append("DebugMode");
+            csvWriter.append(",");
+            csvWriter.append(debugMode + "");
+            csvWriter.append("\n");
+        } catch (IOException ex) {
+            Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                csvWriter.close();
+            } catch (IOException ex) {
+                Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
 }
