@@ -2,8 +2,6 @@ build/
 build/built-jar.properties
 dist/README.TXT
 dist/SECURDE.jar
-*.log
 *.class
-logs/
 nbproject/
 /dist/
