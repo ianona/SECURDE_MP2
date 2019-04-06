@@ -389,8 +389,8 @@ public class SQLite {
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement();
                 //                ResultSet rs = stmt.executeQuery(sql)
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-
+                ) {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             pstmt.setString(2, hashPassword);
             ResultSet rs = pstmt.executeQuery();
@@ -409,12 +409,11 @@ public class SQLite {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
         String sql = "DELETE FROM users WHERE username = ?";
 
-        try (Connection conn = DriverManager.getConnection(driverURL); 
-//                Statement stmt = conn.createStatement()
-                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                ) {
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                //                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
 //            stmt.execute(sql);
-            
+
             pstmt.setString(1, username);
             pstmt.executeUpdate();
             System.out.println("User " + username + " has been deleted.");
