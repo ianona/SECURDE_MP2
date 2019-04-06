@@ -140,6 +140,7 @@ public class Login extends javax.swing.JPanel {
         //Upon clicking the login button, the program will query the database to check if the inputs in the db exist
         //TODO: add hashing to passwords
         String password = jTextField2.getText();
+//        String password = "Qwerty1234!";
         String username = jTextField1.getText().toLowerCase();
         SQLite connection = new SQLite();
         ArrayList<User> users = connection.getUsersByUsernameAndPassword(username, password);
@@ -156,7 +157,8 @@ public class Login extends javax.swing.JPanel {
             timer.scheduleAtFixedRate(lockTask, 1000,1000);
             //errorLbl.setVisible(true);
         } else if (users.size() == 1) {
-            if (users.get(0).getRole() != 1) {
+//            if (users.get(0).getRole() != 1) {
+            if (users.get(0).getLocked() == 0) {
                 attempts = 0;
                 lock = 0;
                 errorLbl.setVisible(false);
@@ -165,9 +167,9 @@ public class Login extends javax.swing.JPanel {
                 frame.mainNav(users.get(0));
 //                logger.info("Logged in as " + users.get(0).getUsername());
             } else {
-                System.out.println("LOGIN ERROR: Account is disabled");
+                System.out.println("LOGIN ERROR: Account is locked");
 //                logger.info("LOGIN ERROR: Account is disabled");
-                errorLbl.setText("Error! Account is disabled");
+                errorLbl.setText("Error! Account is locked");
                 errorLbl.setVisible(true);
             }
         } else {
