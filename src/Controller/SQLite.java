@@ -254,7 +254,7 @@ public class SQLite {
 
 //      PREPARED STATEMENT EXAMPLE
             pstmt.setString(1, username);
-            pstmt.setString(2, hashFunction(password));
+            pstmt.setString(2, SecurityConfig.hash(password));
             pstmt.executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -271,7 +271,7 @@ public class SQLite {
 //            stmt.execute(sql);
 
             pstmt.setString(1, username);
-            pstmt.setString(2, hashFunction(password));
+            pstmt.setString(2, SecurityConfig.hash(password));
             pstmt.setInt(3, role);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -398,7 +398,7 @@ public class SQLite {
 
     public ArrayList<User> getUsersByUsernameAndPassword(String username, String password) {
         //Please hash password before query code is executed
-        String hashPassword = hashFunction(password);
+        String hashPassword = SecurityConfig.hash(password);
         username = username.toLowerCase();
         ArrayList<User> users = new ArrayList<>();
 //        String sql = "SELECT id, username, password, role FROM users where username ='" + username + "' and password ='" + hashPassword + "'";
@@ -409,8 +409,9 @@ public class SQLite {
         System.out.println(hashPassword);
         try (Connection conn = DriverManager.getConnection(driverURL); //                Statement stmt = conn.createStatement();
                 //                ResultSet rs = stmt.executeQuery(sql)
+                PreparedStatement pstmt = conn.prepareStatement(sql);
                 ) {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            
             pstmt.setString(1, username);
             pstmt.setString(2, hashPassword);
             ResultSet rs = pstmt.executeQuery();
@@ -423,6 +424,57 @@ public class SQLite {
             ex.printStackTrace();
         }
         return users;
+    }
+    
+    // updates user role, finds by username
+    public boolean updateRoleByUsername(String username, int role) {
+        String sql = 	"UPDATE users SET role = ? WHERE username = ?";
+        try (
+                Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setInt(1, role);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+        return false;
+    }
+    
+    // updates locked status, finds by username
+    public boolean updateLockedByUsername(String username, int locked) {
+        String sql = 	"UPDATE users SET locked = ? WHERE username = ?";
+        try (
+                Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setInt(1, locked);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+        return false;
+    }
+    
+    // updates user password, finds by username
+    public boolean updatePasswordByUsername(String username, String password) {
+        String sql = 	"UPDATE users SET password = ? WHERE username = ?";
+        try (
+                Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setString(1, SecurityConfig.hash(password));
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+        return false;
     }
 
     public void removeUser(String username) {
@@ -475,32 +527,5 @@ public class SQLite {
             ex.printStackTrace();
         }
         return product;
-    }
-
-    private String hashFunction(String password) {
-        //link to how to do SHA-512 encryption (https://www.geeksforgeeks.org/sha-512-hash-in-java/)
-        try {
-            // getInstance() method is called with algorithm SHA-512 
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
-            // digest() method is called 
-            // to calculate message digest of the input string 
-            // returned as array of byte 
-            byte[] messageDigest = md.digest(password.getBytes());
-            // Convert byte array into signum representation 
-            BigInteger no = new BigInteger(1, messageDigest);
-
-            // Convert message digest into hex value 
-            String hashtext = no.toString(16);
-
-            // Add preceding 0s to make it 32 bit 
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-            password = hashtext;
-            return password;
-        } // For specifying wrong message digest algorithms 
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

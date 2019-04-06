@@ -244,11 +244,12 @@ public class Frame extends javax.swing.JFrame {
         Content.add(clientHomePnl, "clientHomePnl");
         
         this.setVisible(true);
+        setCurUser(null);
     }
     
     public void mainNav(User user){
         setAllButtonsVisibility(false);
-        curUser = user;
+        setCurUser(user);
         if (user.getRole() == 5){
             adminBtn.setVisible(true);
             contentView.show(Content, "adminHomePnl");
@@ -301,7 +302,6 @@ public class Frame extends javax.swing.JFrame {
     public static void setCurUser(User curUser) {
         Frame.curUser = curUser;
     }
-    
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
