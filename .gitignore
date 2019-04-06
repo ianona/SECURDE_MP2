@@ -6,3 +6,4 @@ dist/SECURDE.jar
 *.class
 logs/
 nbproject/
+/dist/

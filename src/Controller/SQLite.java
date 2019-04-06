@@ -4,6 +4,10 @@ import Model.History;
 import Model.Logs;
 import Model.Product;
 import Model.User;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -16,9 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public class SQLite {
 
@@ -296,6 +299,24 @@ public class SQLite {
         return histories;
     }
 
+    public ArrayList<History> getHistoryByUsername(String username) {
+        String sql = "SELECT id, username, name, stock, timestamp FROM history where username = ?";
+        ArrayList<History> histories = new ArrayList<History>();
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                histories.add(toHistory(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return histories;
+    }
+
     public ArrayList<Logs> getLogs() {
         String sql = "SELECT id, event, username, desc, timestamp FROM logs";
         ArrayList<Logs> logs = new ArrayList<Logs>();
@@ -386,8 +407,7 @@ public class SQLite {
         System.out.println("CREDS");
         System.out.println(username);
         System.out.println(hashPassword);
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement();
+        try (Connection conn = DriverManager.getConnection(driverURL); //                Statement stmt = conn.createStatement();
                 //                ResultSet rs = stmt.executeQuery(sql)
                 ) {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -417,6 +437,26 @@ public class SQLite {
             pstmt.setString(1, username);
             pstmt.executeUpdate();
             System.out.println("User " + username + " has been deleted.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void removeLogs(Logs log) {
+//        String sql = "DELETE FROM users WHERE username='" + username + "';";
+        String sql = "DELETE FROM logs WHERE event = ? and username = ? and desc = ? and timestamp = ?";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                //                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+//            stmt.execute(sql);
+
+            pstmt.setString(1, log.getEvent());
+            pstmt.setString(2, log.getUsername());
+            pstmt.setString(3, log.getDesc());
+            pstmt.setString(4, log.getTimestamp()+"");
+            pstmt.executeUpdate();
+            System.out.println("Event Log " + log.getEvent() + " has been deleted.");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
