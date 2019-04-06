@@ -30,6 +30,7 @@ public class ManagerHome extends javax.swing.JPanel {
     
     public ManagerHome() {
         initComponents();
+        usersBtn.setVisible(false);
     }
     
     public void init(SQLite sqlite){

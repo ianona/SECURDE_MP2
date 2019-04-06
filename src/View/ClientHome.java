@@ -30,6 +30,7 @@ public class ClientHome extends javax.swing.JPanel {
     
     public ClientHome() {
         initComponents();
+        usersBtn.setVisible(false);
     }
     
     public void init(SQLite sqlite){

@@ -215,7 +215,7 @@ public class Frame extends javax.swing.JFrame {
     private CardLayout contentView = new CardLayout();
     private CardLayout frameView = new CardLayout();
     
-    private User curUser;
+    private static User curUser;
     
     public void init(Main controller){
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -244,11 +244,12 @@ public class Frame extends javax.swing.JFrame {
         Content.add(clientHomePnl, "clientHomePnl");
         
         this.setVisible(true);
+        setCurUser(null);
     }
     
     public void mainNav(User user){
         setAllButtonsVisibility(false);
-        curUser = user;
+        setCurUser(user);
         if (user.getRole() == 5){
             adminBtn.setVisible(true);
             contentView.show(Content, "adminHomePnl");
@@ -293,6 +294,15 @@ public class Frame extends javax.swing.JFrame {
         managerBtn.setVisible(bool);
         staffBtn.setVisible(bool);
     }
+
+    public static User getCurUser() {
+        return curUser;
+    }
+
+    public void setCurUser(User curUser) {
+        this.curUser = curUser;
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Container;
