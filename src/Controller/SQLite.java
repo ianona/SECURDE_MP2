@@ -498,7 +498,6 @@ public class SQLite {
             ex.printStackTrace();
         }
     }
-
     
     public void removeLogs(Logs log) {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
@@ -519,7 +518,6 @@ public class SQLite {
             ex.printStackTrace();
         }
     }
-
 
     public Product getProduct(String name) {
         String sql = "SELECT name, stock, price FROM product WHERE name='" + name + "';";
