@@ -20,6 +20,7 @@ public class Login extends javax.swing.JPanel {
     private int attempts = 0;
 //    private Logger logger;
     private int lock;
+    private SQLite connection;
     class LockTask extends TimerTask {
         public void run(){
             lock--;
@@ -34,6 +35,10 @@ public class Login extends javax.swing.JPanel {
             }
         }
     };
+    
+    public void init (SQLite sqlite){
+        this.connection = sqlite;
+    }
     
     public Login() {
         initComponents();
@@ -142,7 +147,6 @@ public class Login extends javax.swing.JPanel {
         String password = jTextField2.getText();
 //        String password = "Qwerty1234!";
         String username = jTextField1.getText().toLowerCase();
-        SQLite connection = new SQLite();
         ArrayList<User> users = connection.getUsersByUsernameAndPassword(username, password);
 
         if (attempts % 5 == 0 && attempts > 0) {

@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import View.Frame;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,7 +14,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -134,6 +137,14 @@ public class SecurityConfig {
                 Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    // for db, pass the instance of SQLite being passed in every GUI class (there should only be one instance throughout the program)
+    // mode is 1 for debug mode, 0 for non debug mode
+    public static void log(SQLite db, int mode, String event, String desc){
+        // if trying to log a debug mode log but current mode is 0, stop
+        if (mode == 1 && db.DEBUG_MODE == 0) return;
+        db.addLogs(event, Frame.getCurUser().getUsername(), desc, new Timestamp(new Date().getTime()).toString());
     }
 
 }
