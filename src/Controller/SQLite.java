@@ -362,40 +362,6 @@ public class SQLite {
         }
         return products;
     }
-    
-    public void sellProduct(String productname, int newstock)
-    {
-        String sql = "UPDATE product SET stock=? WHERE name=?";
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement()
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-//            stmt.execute(sql);
-              pstmt.setInt(1, newstock);
-              pstmt.setString(2, productname);
-              pstmt.executeUpdate();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    public void editProduct(String oldproductname, String productname, int newstock, double newprice)
-    {
-        String sql = "UPDATE product SET name=?, stock=?, price=? WHERE name=?";
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement()
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-//            stmt.execute(sql);
-              pstmt.setString(1, productname);
-              pstmt.setInt(2, newstock);
-              pstmt.setDouble(3, newprice);
-              pstmt.setString(4, oldproductname);
-              pstmt.executeUpdate();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 
     public ArrayList<User> getUsers() {
         String sql = "SELECT id, username, password, role, locked FROM users";
@@ -414,26 +380,6 @@ public class SQLite {
         return users;
     }
 
-    public ArrayList<Product> getProductByProductname(String productname) {
-        String sql = "SELECT id, name, stock, price FROM product WHERE name = ?";
-        ArrayList<Product> product = new ArrayList<Product>();
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement();
-                //                ResultSet rs = stmt.executeQuery(sql)
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-
-            pstmt.setString(1, productname);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                product.add(toProduct(rs));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return product;
-    }
-    
     public ArrayList<User> getUsersByUsername(String username) {
         username = username.toLowerCase();
         String sql = "SELECT id, username, password, role, locked FROM users WHERE username = ?";
@@ -573,23 +519,6 @@ public class SQLite {
         }
     }
 
-    public void removeProduct(String username) {
-//        String sql = "DELETE FROM users WHERE username='" + username + "';";
-        String sql = "DELETE FROM product WHERE name = ?";
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement()
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-//            stmt.execute(sql);
-
-            pstmt.setString(1, username);
-            pstmt.executeUpdate();
-            System.out.println("User " + username + " has been deleted.");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
     public Product getProduct(String name) {
         String sql = "SELECT name, stock, price FROM product WHERE name='" + name + "';";
         Product product = null;
