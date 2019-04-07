@@ -257,6 +257,7 @@ public class MgmtUser extends javax.swing.JPanel {
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
                 sqlite.updateLockedByUsername(username, state.equalsIgnoreCase("lock") ? 1 : 0);
                 init();
+                SecurityConfig.log(sqlite, 0, "NOTICE", state + " account of " + username);
             }
         }
     }//GEN-LAST:event_lockBtnActionPerformed

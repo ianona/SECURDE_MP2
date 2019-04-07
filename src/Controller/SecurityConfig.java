@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import Model.User;
 import View.Frame;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -137,14 +138,21 @@ public class SecurityConfig {
                 Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        Frame.getInstance().setTitle("SECURDE - SECURITY Svcs");
+        if (debugMode == 1) {
+            Frame.getInstance().setTitle("SECURDE - SECURITY Svcs [DEBUG MODE]");
+        }
     }
-    
+
     // for db, pass the instance of SQLite being passed in every GUI class (there should only be one instance throughout the program)
     // mode is 1 for debug mode, 0 for non debug mode
-    public static void log(SQLite db, int mode, String event, String desc){
+    public static void log(SQLite db, int mode, String event, String desc) {
         // if trying to log a debug mode log but current mode is 0, stop
-        if (mode == 1 && db.DEBUG_MODE == 0) return;
-        db.addLogs(event, Frame.getCurUser().getUsername(), desc, new Timestamp(new Date().getTime()).toString());
+        if (mode == 1 && db.DEBUG_MODE == 0) {
+            return;
+        }
+        User user = Frame.getCurUser();
+        db.addLogs(event + (mode == 1 ? "[DEBUG]" : ""), user != null ? user.getUsername() : "---", desc, new Timestamp(new Date().getTime()).toString());
     }
 
 }

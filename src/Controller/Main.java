@@ -1,6 +1,5 @@
 package Controller;
 
-
 import Model.History;
 import Model.Logs;
 import Model.Product;
@@ -10,16 +9,15 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-
-
 public class Main {
+
     public SQLite sqlite;
-    
+
     public static void main(String[] args) {
         new Main().init();
     }
-    
-    public void init(){
+
+    public void init() {
         // Initialize a driver object
         sqlite = new SQLite();
 
@@ -98,10 +96,13 @@ public class Main {
 //            System.out.println(" Role: " + users.get(nCtr).getRole());
 //            System.out.println(" Locked: " + users.get(nCtr).getLocked());
 //        }
-        
         // Initialize User Interface
         Frame frame = new Frame();
         frame.init(this);
+        frame.setTitle("SECURDE - SECURITY Svcs");
+        if (sqlite.DEBUG_MODE == 1) {
+            frame.setTitle("SECURDE - SECURITY Svcs [DEBUG MODE]");
+        }
     }
-    
+
 }

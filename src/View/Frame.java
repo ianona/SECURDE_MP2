@@ -8,11 +8,17 @@ import java.awt.Dimension;
 import javax.swing.WindowConstants;
 
 public class Frame extends javax.swing.JFrame {
-
+    
+    private static Frame instance;
     public Frame() {
         initComponents();
+        instance = this;
     }
 
+    public static Frame getInstance() {
+        return instance;
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
