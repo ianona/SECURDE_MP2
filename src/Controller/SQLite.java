@@ -4,6 +4,10 @@ import Model.History;
 import Model.Logs;
 import Model.Product;
 import Model.User;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -16,15 +20,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public class SQLite {
 
     public int DEBUG_MODE = 0;
     String driverURL = "jdbc:sqlite:" + "database.db";
 //    private Logger logger;
+    
+    public SQLite(){
+        SecurityConfig.readDebugMode(this);
+//        System.out.println(DEBUG_MODE + " Debug mode");
+    }
 
     public User toUser(ResultSet rs) throws SQLException {
         return new User(rs.getInt("id"),
@@ -251,7 +259,7 @@ public class SQLite {
 
 //      PREPARED STATEMENT EXAMPLE
             pstmt.setString(1, username);
-            pstmt.setString(2, hashFunction(password));
+            pstmt.setString(2, SecurityConfig.hash(password));
             pstmt.executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -268,7 +276,7 @@ public class SQLite {
 //            stmt.execute(sql);
 
             pstmt.setString(1, username);
-            pstmt.setString(2, hashFunction(password));
+            pstmt.setString(2, SecurityConfig.hash(password));
             pstmt.setInt(3, role);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -289,6 +297,24 @@ public class SQLite {
                         rs.getString("name"),
                         rs.getInt("stock"),
                         rs.getString("timestamp")));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return histories;
+    }
+
+    public ArrayList<History> getHistoryByUsername(String username) {
+        String sql = "SELECT id, username, name, stock, timestamp FROM history where username = ?";
+        ArrayList<History> histories = new ArrayList<History>();
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                histories.add(toHistory(rs));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -377,7 +403,7 @@ public class SQLite {
 
     public ArrayList<User> getUsersByUsernameAndPassword(String username, String password) {
         //Please hash password before query code is executed
-        String hashPassword = hashFunction(password);
+        String hashPassword = SecurityConfig.hash(password);
         username = username.toLowerCase();
         ArrayList<User> users = new ArrayList<>();
 //        String sql = "SELECT id, username, password, role FROM users where username ='" + username + "' and password ='" + hashPassword + "'";
@@ -386,11 +412,11 @@ public class SQLite {
         System.out.println("CREDS");
         System.out.println(username);
         System.out.println(hashPassword);
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement();
+        try (Connection conn = DriverManager.getConnection(driverURL); //                Statement stmt = conn.createStatement();
                 //                ResultSet rs = stmt.executeQuery(sql)
+                PreparedStatement pstmt = conn.prepareStatement(sql);
                 ) {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            
             pstmt.setString(1, username);
             pstmt.setString(2, hashPassword);
             ResultSet rs = pstmt.executeQuery();
@@ -403,6 +429,57 @@ public class SQLite {
             ex.printStackTrace();
         }
         return users;
+    }
+    
+    // updates user role, finds by username
+    public boolean updateRoleByUsername(String username, int role) {
+        String sql = 	"UPDATE users SET role = ? WHERE username = ?";
+        try (
+                Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setInt(1, role);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+        return false;
+    }
+    
+    // updates locked status, finds by username
+    public boolean updateLockedByUsername(String username, int locked) {
+        String sql = 	"UPDATE users SET locked = ? WHERE username = ?";
+        try (
+                Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setInt(1, locked);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+        return false;
+    }
+    
+    // updates user password, finds by username
+    public boolean updatePasswordByUsername(String username, String password) {
+        String sql = 	"UPDATE users SET password = ? WHERE username = ?";
+        try (
+                Connection conn = DriverManager.getConnection(driverURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setString(1, SecurityConfig.hash(password));
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+        return false;
     }
 
     public void removeUser(String username) {
@@ -421,6 +498,26 @@ public class SQLite {
             ex.printStackTrace();
         }
     }
+    
+    public void removeLogs(Logs log) {
+//        String sql = "DELETE FROM users WHERE username='" + username + "';";
+        String sql = "DELETE FROM logs WHERE event = ? and username = ? and desc = ? and timestamp = ?";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                //                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+//            stmt.execute(sql);
+
+            pstmt.setString(1, log.getEvent());
+            pstmt.setString(2, log.getUsername());
+            pstmt.setString(3, log.getDesc());
+            pstmt.setString(4, log.getTimestamp()+"");
+            pstmt.executeUpdate();
+            System.out.println("Event Log " + log.getEvent() + " has been deleted.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public Product getProduct(String name) {
         String sql = "SELECT name, stock, price FROM product WHERE name='" + name + "';";
@@ -435,32 +532,5 @@ public class SQLite {
             ex.printStackTrace();
         }
         return product;
-    }
-
-    private String hashFunction(String password) {
-        //link to how to do SHA-512 encryption (https://www.geeksforgeeks.org/sha-512-hash-in-java/)
-        try {
-            // getInstance() method is called with algorithm SHA-512 
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
-            // digest() method is called 
-            // to calculate message digest of the input string 
-            // returned as array of byte 
-            byte[] messageDigest = md.digest(password.getBytes());
-            // Convert byte array into signum representation 
-            BigInteger no = new BigInteger(1, messageDigest);
-
-            // Convert message digest into hex value 
-            String hashtext = no.toString(16);
-
-            // Add preceding 0s to make it 32 bit 
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-            password = hashtext;
-            return password;
-        } // For specifying wrong message digest algorithms 
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
