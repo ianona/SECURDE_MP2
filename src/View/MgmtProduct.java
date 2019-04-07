@@ -21,11 +21,11 @@ public class MgmtProduct extends javax.swing.JPanel {
 
     public SQLite sqlite;
     public DefaultTableModel tableModel;
-    
+
     public MgmtProduct(SQLite sqlite) {
         initComponents();
         this.sqlite = sqlite;
-        tableModel = (DefaultTableModel)table.getModel();
+        tableModel = (DefaultTableModel) table.getModel();
         table.getTableHeader().setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14));
 
 //        UNCOMMENT TO DISABLE BUTTONS
@@ -35,30 +35,30 @@ public class MgmtProduct extends javax.swing.JPanel {
 //        deleteBtn.setVisible(false);
     }
 
-    public void init(){
+    public void init() {
         //      CLEAR TABLE
-        for(int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--){
+        for (int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--) {
             tableModel.removeRow(0);
         }
-        
+
 //      LOAD CONTENTS
         ArrayList<Product> products = sqlite.getProduct();
-        for(int nCtr = 0; nCtr < products.size(); nCtr++){
+        for (int nCtr = 0; nCtr < products.size(); nCtr++) {
             tableModel.addRow(new Object[]{
-                products.get(nCtr).getName(), 
-                products.get(nCtr).getStock(), 
+                products.get(nCtr).getName(),
+                products.get(nCtr).getStock(),
                 products.get(nCtr).getPrice()});
         }
     }
-    
-    public void designer(JTextField component, String text){
+
+    public void designer(JTextField component, String text) {
         component.setSize(70, 600);
         component.setFont(new java.awt.Font("Tahoma", 0, 18));
         component.setBackground(new java.awt.Color(240, 240, 240));
         component.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         component.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true), text, javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12)));
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -173,9 +173,27 @@ public class MgmtProduct extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    //Won Suk Cho: for error messages
+    public void popuperror(String infoMessage) {
+        JOptionPane.showMessageDialog(null, infoMessage, "ERROR", JOptionPane.ERROR_MESSAGE);
+    }
+
+    //Won Suk Cho: for warning messages
+    public void popupwarning(String infoMessage) {
+        JOptionPane.showMessageDialog(null, infoMessage, "WARNING", JOptionPane.WARNING_MESSAGE);
+    }
+
+    //Won Suk Cho: for reminder messages
+    public void popupmessage(String infoMessage) {
+        JOptionPane.showMessageDialog(null, infoMessage, "REMINDER", JOptionPane.PLAIN_MESSAGE);
+    }
+
     private void purchaseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purchaseBtnActionPerformed
-        if(table.getSelectedRow() >= 0){
-            JTextField stockFld = new JTextField("0");
+        int stock = 0;
+        int chosen = 0;
+
+        if (table.getSelectedRow() >= 0) {
+            JTextField stockFld = new JTextField("");
             designer(stockFld, "PRODUCT STOCK");
 
             Object[] message = {
@@ -185,8 +203,39 @@ public class MgmtProduct extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, message, "PURCHASE PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
             if (result == JOptionPane.OK_OPTION) {
-                System.out.println(stockFld.getText());
+                if (stockFld.getText().equals("")) {
+                    popuperror("Field empty, please fill it up.");
+                } else {
+                    try {
+                        if (stockFld.getText().matches("[\\d]+")) {
+                            chosen = Integer.parseInt(stockFld.getText());
+                            stock = (int) tableModel.getValueAt(table.getSelectedRow(), 1);
+
+                            if (stock >= 0) {
+                                if (stock >= chosen) {
+                                    popupmessage("Purchased Successful!");
+
+                                    sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
+                                    init();
+                                } else {
+                                    popupwarning("Not enough stock available.");
+                                }
+                            } else {
+                                popuperror("No negative values!");
+                            }
+
+                        } else {
+                            popuperror("Only numerical values are allowed.");
+                        }
+                    } catch (Exception e) {
+                        popuperror("Exceeding value!");
+                    }
+                }
+
+                //System.out.println(stockFld.getText());
             }
+        } else {
+            popupmessage("Please select any given product.");
         }
     }//GEN-LAST:event_purchaseBtnActionPerformed
 
@@ -199,6 +248,8 @@ public class MgmtProduct extends javax.swing.JPanel {
         designer(stockFld, "PRODUCT STOCK");
         designer(priceFld, "PRODUCT PRICE");
 
+        double price = 0;
+
         Object[] message = {
             "Insert New Product Details:", nameFld, stockFld, priceFld
         };
@@ -206,17 +257,79 @@ public class MgmtProduct extends javax.swing.JPanel {
         int result = JOptionPane.showConfirmDialog(null, message, "ADD PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            System.out.println(nameFld.getText());
-            System.out.println(stockFld.getText());
-            System.out.println(priceFld.getText());
+            String newprice, newnumstock;
+            newnumstock = stockFld.getText().replaceFirst("^0+(?!$)", "");
+            newprice = priceFld.getText().replaceFirst("^0+(?!$)", "");
+            boolean isAtMax32 = nameFld.getText().length() <= 32;
+            boolean onlyNumber = newnumstock.matches("[\\d]+");
+            boolean curAllnum = newprice.matches("[\\d]+");
+            boolean curDecnum = newprice.matches("[\\d]+\\.+[\\d]+");
+            boolean curPernum = newprice.matches("[\\d]+\\.");
+
+            if (newnumstock.equals("") || nameFld.getText().equals("") || newprice.equals("")) {
+                popuperror("Field/s empty, please fill it up.");
+            } else {
+                if (sqlite.getProductByProductname(nameFld.getText()).isEmpty()) {
+                    if (isAtMax32) {
+                        try {
+                            if (onlyNumber && Integer.parseInt(newnumstock) >= 0 && Double.parseDouble(newprice) >= 0) {
+
+                                if (curDecnum) {
+                                    price = Double.parseDouble(newprice);
+                                    price = Math.floor(price * 100) / 100;
+                                    System.out.println(price);
+
+                                    popupmessage("Edit Successful!");
+
+                                    sqlite.addProduct(nameFld.getText(), Integer.parseInt(newnumstock), price);
+                                    init();
+                                } else if (curPernum) {
+                                    price = Double.parseDouble(newprice);
+                                    price = Math.floor(price * 100) / 100;
+                                    System.out.println(price);
+
+                                    popupmessage("Edit Successful!");
+
+                                    sqlite.addProduct(nameFld.getText(), Integer.parseInt(newnumstock), price);
+                                    init();
+                                } else if (curAllnum) {
+                                    price = Double.parseDouble(newprice);
+                                    price = Math.floor(price * 100) / 100;
+                                    System.out.println(price);
+
+                                    popupmessage("Product Added Successful!");
+
+                                    sqlite.addProduct(nameFld.getText(), Integer.parseInt(newnumstock), price);
+                                    init();
+                                }
+                            } else {
+                                popuperror("Invalid input!");
+                            }
+                        } catch (Exception e) {
+                            popuperror("Exceeding value!");
+                        }
+                    } else {
+                        popuperror("Invalid input!");
+                    }
+                } else {
+                    popuperror("Product name not unique, choose something else.");
+                }
+            }
+
+//                System.out.println(nameFld.getText());
+//                System.out.println(stockFld.getText());
+//                System.out.println(priceFld.getText());
         }
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-        if(table.getSelectedRow() >= 0){
+        if (table.getSelectedRow() >= 0) {
             JTextField nameFld = new JTextField(tableModel.getValueAt(table.getSelectedRow(), 0) + "");
             JTextField stockFld = new JTextField(tableModel.getValueAt(table.getSelectedRow(), 1) + "");
             JTextField priceFld = new JTextField(tableModel.getValueAt(table.getSelectedRow(), 2) + "");
+
+            String oldname = nameFld.getText();
+            double price = 0;
 
             designer(nameFld, "PRODUCT NAME");
             designer(stockFld, "PRODUCT STOCK");
@@ -229,19 +342,84 @@ public class MgmtProduct extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, message, "EDIT PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
             if (result == JOptionPane.OK_OPTION) {
-                System.out.println(nameFld.getText());
-                System.out.println(stockFld.getText());
-                System.out.println(priceFld.getText());
+                String newprice, newnumstock;
+                newnumstock = stockFld.getText().replaceFirst("^0+(?!$)", "");
+                newprice = priceFld.getText().replaceFirst("^0+(?!$)", "");
+                boolean isAtMax32 = nameFld.getText().length() <= 32;
+                boolean onlyNumber = newnumstock.matches("[\\d]+");
+                boolean curAllnum = newprice.matches("[\\d]+");
+                boolean curDecnum = newprice.matches("[\\d]+\\.+[\\d]+");
+                boolean curPernum = newprice.matches("[\\d]+\\.");
+
+                if (newnumstock.equals("") || nameFld.getText().equals("") || newprice.equals("")) {
+                    popuperror("Field/s empty, please fill it up.");
+                } else {
+                    if (sqlite.getProductByProductname(nameFld.getText()).isEmpty() || nameFld.getText().equals(oldname)) {
+                        if (isAtMax32) {
+                            try {
+                                if (onlyNumber && Integer.parseInt(newnumstock) >= 0 && Double.parseDouble(newprice) >= 0) {
+                                    System.out.println(stockFld.getText().replaceFirst("^0+(?!$)", ""));
+
+                                    if (curDecnum) {
+                                        price = Double.parseDouble(newprice);
+                                        price = Math.floor(price * 100) / 100;
+                                        System.out.println(price);
+
+                                        popupmessage("Edit Successful!");
+
+                                        sqlite.editProduct(oldname, nameFld.getText(), Integer.parseInt(newnumstock), price);
+                                        init();
+                                    } else if (curPernum) {
+                                        price = Double.parseDouble(newprice);
+                                        price = Math.floor(price * 100) / 100;
+                                        System.out.println(price);
+
+                                        popupmessage("Edit Successful!");
+
+                                        sqlite.editProduct(oldname, nameFld.getText(), Integer.parseInt(newnumstock), price);
+                                        init();
+                                    } else if (curAllnum) {
+                                        price = Double.parseDouble(newprice);
+                                        price = Math.floor(price * 100) / 100;
+                                        System.out.println(price);
+
+                                        popupmessage("Edit Successful!");
+
+                                        sqlite.editProduct(oldname, nameFld.getText(), Integer.parseInt(newnumstock), price);
+                                        init();
+                                    }
+                                } else {
+                                    popuperror("Invalid input!");
+                                }
+                            } catch (Exception e) {
+                                popuperror("Exceeding value!");
+                            }
+                        } else {
+                            popuperror("Invalid input!");
+                        }
+                    } else {
+                        popuperror("Product name not unique, choose something else.");
+                    }
+                }
+
+//                System.out.println(nameFld.getText());
+//                System.out.println(stockFld.getText());
+//                System.out.println(priceFld.getText());
             }
+        } else {
+            popupmessage("Please select any given product.");
         }
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        if(table.getSelectedRow() >= 0){
+        if (table.getSelectedRow() >= 0) {
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tableModel.getValueAt(table.getSelectedRow(), 0) + "?", "DELETE PRODUCT", JOptionPane.YES_NO_OPTION);
-            
+
             if (result == JOptionPane.YES_OPTION) {
-                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
+                sqlite.removeProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0));
+                popupmessage("Deleted Successful!");
+                init();
+                //System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
             }
         }
     }//GEN-LAST:event_deleteBtnActionPerformed
