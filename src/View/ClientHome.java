@@ -27,11 +27,9 @@ public class ClientHome extends javax.swing.JPanel {
     public MgmtUser mgmtUser;
     
     private CardLayout contentView = new CardLayout();
- 
+    
     public ClientHome() {
         initComponents();
-        usersBtn.setVisible(false);
-        logsBtn.setVisible(false);
     }
     
     public void init(SQLite sqlite){
