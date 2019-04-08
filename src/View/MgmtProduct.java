@@ -64,6 +64,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                 break;
             case 3:
                 purchaseBtn.setVisible(false);
+                deleteBtn.setVisible(false);
                 break;
             case 4:
                 purchaseBtn.setVisible(false);
