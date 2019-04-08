@@ -462,10 +462,6 @@ public class SQLite {
         ArrayList<User> users = new ArrayList<>();
 //        String sql = "SELECT id, username, password, role FROM users where username ='" + username + "' and password ='" + hashPassword + "'";
         String sql = "SELECT id, username, password, role, locked FROM users where username = ? and password = ?";
-
-        System.out.println("CREDS");
-        System.out.println(username);
-        System.out.println(hashPassword);
         try (Connection conn = DriverManager.getConnection(driverURL); //                Statement stmt = conn.createStatement();
                 //                ResultSet rs = stmt.executeQuery(sql)
                 PreparedStatement pstmt = conn.prepareStatement(sql);

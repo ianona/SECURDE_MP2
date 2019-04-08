@@ -5,6 +5,7 @@
  */
 package View;
 //[255,102,51]
+
 import Controller.SQLite;
 import Model.History;
 import Model.Logs;
@@ -25,37 +26,43 @@ public class ClientHome extends javax.swing.JPanel {
     public MgmtLogs mgmtLogs;
     public MgmtProduct mgmtProduct;
     public MgmtUser mgmtUser;
-    
+
     private CardLayout contentView = new CardLayout();
- 
+
     public ClientHome() {
         initComponents();
-        usersBtn.setVisible(false);
+//        usersBtn.setVisible(false);
         logsBtn.setVisible(false);
     }
-    
-    public void init(SQLite sqlite){
+
+    public void init(SQLite sqlite) {
         mgmtHistory = new MgmtHistory(sqlite);
         mgmtLogs = new MgmtLogs(sqlite);
         mgmtProduct = new MgmtProduct(sqlite);
         mgmtUser = new MgmtUser(sqlite);
-    
+
         Content.setLayout(contentView);
-        Content.add(new Home("WELCOME CLIENT!", new java.awt.Color(255,102,51)), "home");
+        Content.add(new Home("WELCOME CLIENT!", new java.awt.Color(255, 102, 51)), "home");
         Content.add(mgmtUser, "mgmtUser");
         Content.add(mgmtHistory, "mgmtHistory");
         Content.add(mgmtProduct, "mgmtProduct");
         Content.add(mgmtLogs, "mgmtLogs");
-        
+
 //        UNCOMMENT TO DISABLE BUTTONS
 //        historyBtn.setVisible(false);
 //        usersBtn.setVisible(false);
 //        productsBtn.setVisible(false);
 //        logsBtn.setVisible(false);
     }
-    
-    public void showPnl(String panelName){
+
+    public void showPnl(String panelName) {
         contentView.show(Content, panelName);
+        if (panelName.equalsIgnoreCase("home")) {
+            usersBtn.setForeground(Color.black);
+            productsBtn.setForeground(Color.black);
+            historyBtn.setForeground(Color.black);
+            logsBtn.setForeground(Color.black);
+        }
     }
 
     /**
@@ -192,8 +199,7 @@ public class ClientHome extends javax.swing.JPanel {
         logsBtn.setForeground(Color.red);
         contentView.show(Content, "mgmtLogs");
     }//GEN-LAST:event_logsBtnActionPerformed
-    
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Content;

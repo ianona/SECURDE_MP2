@@ -144,8 +144,8 @@ public class Login extends javax.swing.JPanel {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         //Upon clicking the login button, the program will query the database to check if the inputs in the db exist
         //TODO: add hashing to passwords
-        String password = jTextField2.getText();
-//        String password = "Qwerty1234!";
+//        String password = jTextField2.getText();
+        String password = "Qwerty1234!";
         String username = jTextField1.getText().toLowerCase();
         ArrayList<User> users = connection.getUsersByUsernameAndPassword(username, password);
 

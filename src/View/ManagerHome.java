@@ -30,8 +30,12 @@ public class ManagerHome extends javax.swing.JPanel {
     
     public ManagerHome() {
         initComponents();
+<<<<<<< HEAD
         logsBtn.setVisible(false);
+//        usersBtn.setVisible(false);
+=======
         usersBtn.setVisible(false);
+>>>>>>> c38db8563b6fcfb85890e77f3fd0beb582efdc2f
     }
     
     public void init(SQLite sqlite){
@@ -56,6 +60,12 @@ public class ManagerHome extends javax.swing.JPanel {
     
     public void showPnl(String panelName){
         contentView.show(Content, panelName);
+        if (panelName.equalsIgnoreCase("home")) {
+            usersBtn.setForeground(Color.black);
+            productsBtn.setForeground(Color.black);
+            historyBtn.setForeground(Color.black);
+            logsBtn.setForeground(Color.black);
+        }
     }
 
     /**

@@ -144,6 +144,33 @@ public class SecurityConfig {
         }
     }
 
+    public static void updateUserArchive(User user) {
+        FileWriter csvWriter = null;
+        try {
+            csvWriter = new FileWriter("./userArchive.csv", true);
+            
+            csvWriter.append("\n");
+            csvWriter.append("" + user.getId());
+            csvWriter.append(",");
+            csvWriter.append(user.getUsername());
+            csvWriter.append(",");
+            csvWriter.append(user.getPassword());
+            csvWriter.append(",");
+            csvWriter.append("" + user.getRole());
+            csvWriter.append(",");
+            csvWriter.append("" + user.getLocked());
+            // TO DO: MAKE READ ONLY
+        } catch (IOException ex) {
+            Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                csvWriter.close();
+            } catch (IOException ex) {
+                Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     // for db, pass the instance of SQLite being passed in every GUI class (there should only be one instance throughout the program)
     // mode is 1 for debug mode, 0 for non debug mode
     public static void log(SQLite db, int mode, String event, String desc) {
@@ -152,7 +179,7 @@ public class SecurityConfig {
             return;
         }
         User user = Frame.getCurUser();
-        db.addLogs(event + (mode == 1 ? "[DEBUG]" : ""), user != null ? user.getUsername() : "---", desc, new Timestamp(new Date().getTime()).toString());
+        db.addLogs(event + (mode == 1 ? " [DEBUG]" : ""), user != null ? user.getUsername() : "---", desc, new Timestamp(new Date().getTime()).toString());
     }
 
 }

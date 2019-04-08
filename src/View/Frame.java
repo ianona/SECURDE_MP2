@@ -1,15 +1,19 @@
 package View;
 
 import Controller.Main;
+import Controller.SecurityConfig;
 import Model.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
 public class Frame extends javax.swing.JFrame {
-    
+
     private static Frame instance;
+
     public Frame() {
         initComponents();
         instance = this;
@@ -18,7 +22,7 @@ public class Frame extends javax.swing.JFrame {
     public static Frame getInstance() {
         return instance;
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -206,96 +210,100 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_clientBtnActionPerformed
 
     private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
-        frameView.show(Container, "loginPnl");
+        int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?", "Logout", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
+        if (result == JOptionPane.OK_OPTION) {
+            frameView.show(Container, "loginPnl");
+
+        }
     }//GEN-LAST:event_logoutBtnActionPerformed
 
     public Main main;
     public Login loginPnl = new Login();
     public Register registerPnl = new Register();
-    
+
     private AdminHome adminHomePnl = new AdminHome();
     private ManagerHome managerHomePnl = new ManagerHome();
     private StaffHome staffHomePnl = new StaffHome();
     private ClientHome clientHomePnl = new ClientHome();
-    
+
     private CardLayout contentView = new CardLayout();
     private CardLayout frameView = new CardLayout();
-    
+
     private static User curUser;
-    
-    public void init(Main controller){
+
+    public void init(Main controller) {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setTitle("SECURDE - SECURITY Svcs");
         this.setLocationRelativeTo(null);
-        
+
         this.main = controller;
         loginPnl.frame = this;
         registerPnl.frame = this;
-        
+
         loginPnl.init(main.sqlite);
         adminHomePnl.init(main.sqlite);
         clientHomePnl.init(main.sqlite);
         managerHomePnl.init(main.sqlite);
         staffHomePnl.init(main.sqlite);
-        
+
         Container.setLayout(frameView);
         Container.add(loginPnl, "loginPnl");
         Container.add(registerPnl, "registerPnl");
         Container.add(HomePnl, "homePnl");
         frameView.show(Container, "loginPnl");
-        
+
         Content.setLayout(contentView);
         Content.add(adminHomePnl, "adminHomePnl");
         Content.add(managerHomePnl, "managerHomePnl");
         Content.add(staffHomePnl, "staffHomePnl");
         Content.add(clientHomePnl, "clientHomePnl");
-        
+
         this.setVisible(true);
         setCurUser(null);
     }
-    
-    public void mainNav(User user){
+
+    public void mainNav(User user) {
         setAllButtonsVisibility(false);
         setCurUser(user);
-        if (user.getRole() == 5){
+        if (user.getRole() == 5) {
             adminBtn.setVisible(true);
-            contentView.show(Content, "adminHomePnl");
+            adminBtnActionPerformed(null);
         }
-        if (user.getRole() == 4){
+        if (user.getRole() == 4) {
             managerBtn.setVisible(true);
-            contentView.show(Content, "managerHomePnl");
+            managerBtnActionPerformed(null);
         }
-        if (user.getRole() == 3){
+        if (user.getRole() == 3) {
             staffBtn.setVisible(true);
-            contentView.show(Content, "staffHomePnl");
+            staffBtnActionPerformed(null);
         }
-        if (user.getRole() == 2){
+        if (user.getRole() == 2) {
             clientBtn.setVisible(true);
-            contentView.show(Content, "clientHomePnl");
+            clientBtnActionPerformed(null);
         }
         frameView.show(Container, "homePnl");
     }
-    
-    public void loginNav(){
+
+    public void loginNav() {
         frameView.show(Container, "loginPnl");
     }
-    
-    public void registerNav(){
+
+    public void registerNav() {
         frameView.show(Container, "registerPnl");
     }
-    
-    public void registerAction(String username, String password, String confpass){
+
+    public void registerAction(String username, String password, String confpass) {
         main.sqlite.addUser(username, password);
     }
-    
-    public void setAllButtonsVisibility(Boolean bool){
+
+    public void setAllButtonsVisibility(Boolean bool) {
         adminBtn.setVisible(bool);
         clientBtn.setVisible(bool);
         managerBtn.setVisible(bool);
         staffBtn.setVisible(bool);
     }
-    
-    public void setAllPanelsVisibility(Boolean bool){
+
+    public void setAllPanelsVisibility(Boolean bool) {
         adminBtn.setVisible(bool);
         clientBtn.setVisible(bool);
         managerBtn.setVisible(bool);
@@ -309,7 +317,7 @@ public class Frame extends javax.swing.JFrame {
     public static void setCurUser(User curUser) {
         Frame.curUser = curUser;
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Container;

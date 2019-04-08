@@ -10,12 +10,15 @@ import Controller.SecurityConfig;
 import Model.User;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -32,6 +35,37 @@ public class MgmtUser extends javax.swing.JPanel {
         this.sqlite = sqlite;
         tableModel = (DefaultTableModel) table.getModel();
         table.getTableHeader().setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14));
+        table.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            if (table.getSelectedRow() < 0 || Frame.getCurUser().getRole() == 2) {
+                return;
+            }
+
+            String selectedUsername = table.getValueAt(table.getSelectedRow(), 0).toString();
+            int selectedRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
+            User curUser = Frame.getCurUser();
+//            switch (curUser.getRole()){
+//                // managers can only 
+//                case 4:
+//            }
+//            
+            // only admin can change everyone's password
+            // every other account can only change their own password
+            chgpassBtn.setVisible(true);
+            if (curUser.getRole() != 5) {
+                if (!curUser.getUsername().equals(selectedUsername)) {
+                    chgpassBtn.setVisible(false);
+                }
+            }
+
+            deleteBtn.setVisible(true);
+            lockBtn.setVisible(true);
+            editRoleBtn.setVisible(true);
+            if (curUser.getUsername().equals(selectedUsername)) {
+                deleteBtn.setVisible(false);
+                lockBtn.setVisible(false);
+                editRoleBtn.setVisible(false);
+            }
+        });
 
 //        UNCOMMENT TO DISABLE BUTTONS
 //        editBtn.setVisible(false);
@@ -41,14 +75,38 @@ public class MgmtUser extends javax.swing.JPanel {
     }
 
     public void init() {
+        // only admin can delete accounts
+        deleteBtn.setVisible(true);
+        if (Frame.getCurUser().getRole() != 5) {
+            deleteBtn.setVisible(false);
+        }
+        if (Frame.getCurUser().getRole() == 2) {
+            editRoleBtn.setVisible(false);
+            lockBtn.setVisible(false);
+            tableModel.setColumnCount(1);
+        }
+
         //      CLEAR TABLE
         for (int nCtr = tableModel.getRowCount(); nCtr > 0; nCtr--) {
             tableModel.removeRow(0);
         }
 
-//      LOAD CONTENTS
-        ArrayList<User> users = sqlite.getUsers();
+        //      LOAD CONTENTS
+        List<User> users = sqlite.getUsers();
         String[] roles = {"", "Client", "Staff", "Manager", "Admin"};
+        User curUser = Frame.getCurUser();
+        switch (curUser.getRole()) {
+            case 4:
+                users = users.stream().filter(u -> u.getRole() < 4 || u.getId() == curUser.getId()).collect(Collectors.toList());
+                break;
+            case 3:
+                users = users.stream().filter(u -> u.getRole() < 3 || u.getId() == curUser.getId()).collect(Collectors.toList());
+                break;
+            case 2:
+                users = users.stream().filter(u -> u.getId() == curUser.getId()).collect(Collectors.toList());
+                break;
+        }
+
         for (int nCtr = 0; nCtr < users.size(); nCtr++) {
             tableModel.addRow(new Object[]{
                 users.get(nCtr).getUsername(),
@@ -199,9 +257,13 @@ public class MgmtUser extends javax.swing.JPanel {
 
             if (result != null) {
                 int newRole = Integer.parseInt(result.substring(0, 1));
+                if (curRole == newRole) {
+                    return;
+                }
                 System.out.println("Changing role of " + username + " to " + newRole);
                 sqlite.updateRoleByUsername(username, newRole);
                 init();
+                SecurityConfig.log(sqlite, 0, "NOTICE", "Changed role of " + username + " from " + options[curRole - 1] + " to " + options[newRole - 1]);
             }
         }
     }//GEN-LAST:event_editRoleBtnActionPerformed
@@ -223,13 +285,16 @@ public class MgmtUser extends javax.swing.JPanel {
                     deleteMsg += ", ";
                 }
             }
-            deleteMsg += "?";
+            deleteMsg += "?\nNote: Accounts will first be archived before being deleted. ";
             int result = JOptionPane.showConfirmDialog(null, deleteMsg, "DELETE USER", JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION) {
                 for (int i = 0; i < table.getSelectedRows().length; i++) {
                     String username = tableModel.getValueAt(table.getSelectedRows()[i], 0).toString();
+                    User toDelete = sqlite.getUsersByUsername(username).get(0);
                     sqlite.removeUser(username);
+                    SecurityConfig.updateUserArchive(toDelete);
+                    SecurityConfig.log(sqlite, 0, "NOTICE", "Archived and deleted the account of " + username);
                 }
                 init();
             }
@@ -245,48 +310,81 @@ public class MgmtUser extends javax.swing.JPanel {
 
             String username = tableModel.getValueAt(table.getSelectedRow(), 0).toString();
             if (Frame.getCurUser().getUsername().equalsIgnoreCase(username)) {
-                    JOptionPane.showMessageDialog(null,
-                            "Cannot toggle own account",
-                            "Error",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+                JOptionPane.showMessageDialog(null,
+                        "Cannot toggle own account",
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to " + state + " " + username + "?", "DELETE USER", JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION) {
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
                 sqlite.updateLockedByUsername(username, state.equalsIgnoreCase("lock") ? 1 : 0);
                 init();
-                SecurityConfig.log(sqlite, 0, "NOTICE", state + " account of " + username);
+                SecurityConfig.log(sqlite, 0, "NOTICE", state.substring(0, 1).toUpperCase() + state.substring(1) + "ed account of " + username);
             }
         }
     }//GEN-LAST:event_lockBtnActionPerformed
 
     private void chgpassBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chgpassBtnActionPerformed
         if (table.getSelectedRow() >= 0) {
+            String username = tableModel.getValueAt(table.getSelectedRow(), 0).toString();
+
+            JTextField oldpass = new JPasswordField();
             JTextField password = new JPasswordField();
             JTextField confpass = new JPasswordField();
+
+            designer(oldpass, "OLD PASSWORD");
             designer(password, "PASSWORD");
             designer(confpass, "CONFIRM PASSWORD");
 
             Object[] message = {
-                "Enter New Password (note: passwords must contain\nat least one uppercase, one lowercase, one special, and one numeric character\nand have a minimum length of 8):", password, confpass
+                "Enter New Password (note: passwords must contain\nat least one uppercase, one lowercase, one special, and one numeric character\nand have a minimum length of 8):",
+                oldpass,
+                password,
+                confpass
             };
 
-            String username = tableModel.getValueAt(table.getSelectedRow(), 0).toString();
+            if (!Frame.getCurUser().getUsername().equalsIgnoreCase(username)) {
+                oldpass.setVisible(false);
+            }
+
             int result = JOptionPane.showConfirmDialog(null, message, "CHANGE PASSWORD", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
+            User selectedUser = sqlite.getUsersByUsername(username).get(0);
             if (result == JOptionPane.OK_OPTION) {
                 List<String> errors = SecurityConfig.checkPassword(username, password.getText(), confpass.getText());
                 if (errors.size() != 0) {
                     JOptionPane.showMessageDialog(null,
-                            errors.get(errors.size()-1),
+                            errors.get(errors.size() - 1),
                             "Error",
                             JOptionPane.WARNING_MESSAGE);
+                    SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Failed attempt to change the password of " + username + " due to: " + errors.get(errors.size() - 1));
                     return;
                 }
-                System.out.println("Changing password...");
-                sqlite.updatePasswordByUsername(username,password.getText());
+
+                if (Frame.getCurUser().getUsername().equals(username)
+                        && !selectedUser.getPassword().equals(SecurityConfig.hash(oldpass.getText()))) {
+                    JOptionPane.showMessageDialog(null,
+                            "Incorrect old password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Failed attempt to change the password of " + username + " due to incorrect old password");
+                    return;
+                }
+
+                if (selectedUser.getPassword().equals(SecurityConfig.hash(password.getText()))) {
+                    JOptionPane.showMessageDialog(null,
+                            "New password same as current password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Failed attempt to change the password of " + username + " due to new password being same as old password");
+                    return;
+                }
+
+                sqlite.updatePasswordByUsername(username, password.getText());
+                SecurityConfig.log(sqlite, 0, "NOTICE", "Changed the password of " + username);
             }
         }
     }//GEN-LAST:event_chgpassBtnActionPerformed
