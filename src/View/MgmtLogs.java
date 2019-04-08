@@ -209,14 +209,18 @@ public class MgmtLogs extends javax.swing.JPanel {
     }//GEN-LAST:event_clearBtnActionPerformed
 
     private void debugBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_debugBtnActionPerformed
+        int dialogButton = 0;
+        int dialogResult;
         if (sqlite.DEBUG_MODE == 1) {
 //            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
+            dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to switch from DEBUG MODE to NON-DEBUG MODE?", "Warning", dialogButton);
             sqlite.DEBUG_MODE = 0;
             SecurityConfig.updateConfig(0);
             SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned off by " + Frame.getCurUser().getUsername());
             init();
         } else {
 //            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
+            dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to switch from NON-DEBUG MODE to DEBUG MODE?", "Warning", dialogButton);
             sqlite.DEBUG_MODE = 1;
             SecurityConfig.updateConfig(1);
             SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned on by " + Frame.getCurUser().getUsername());
