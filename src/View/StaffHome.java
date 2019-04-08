@@ -30,12 +30,7 @@ public class StaffHome extends javax.swing.JPanel {
     
     public StaffHome() {
         initComponents();
-<<<<<<< HEAD
         logsBtn.setVisible(false);
-//        usersBtn.setVisible(false);
-=======
-        usersBtn.setVisible(false);
->>>>>>> c38db8563b6fcfb85890e77f3fd0beb582efdc2f
     }
     
     public void init(SQLite sqlite){
