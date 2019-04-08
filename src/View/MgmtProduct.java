@@ -7,7 +7,9 @@ package View;
 
 import Controller.SQLite;
 import Model.Product;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -29,10 +31,10 @@ public class MgmtProduct extends javax.swing.JPanel {
         table.getTableHeader().setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14));
 
 //        UNCOMMENT TO DISABLE BUTTONS
-//        purchaseBtn.setVisible(false);
+//        purchaseBtn.setVisible(false);    
 //        addBtn.setVisible(false);
 //        editBtn.setVisible(false);
-//        deleteBtn.setVisible(false);
+//        deleteBtn.setVisible(false)
     }
 
     public void init() {
@@ -48,6 +50,29 @@ public class MgmtProduct extends javax.swing.JPanel {
                 products.get(nCtr).getName(),
                 products.get(nCtr).getStock(),
                 products.get(nCtr).getPrice()});
+        }
+        purchaseBtn.setVisible(true);
+        addBtn.setVisible(true);
+        editBtn.setVisible(true);
+        deleteBtn.setVisible(true);
+        
+        switch (Frame.getCurUser().getRole()) {
+            case 2:
+                addBtn.setVisible(false);
+                editBtn.setVisible(false);
+                deleteBtn.setVisible(false);
+                break;
+            case 3:
+                purchaseBtn.setVisible(false);
+                break;
+            case 4:
+                purchaseBtn.setVisible(false);
+                break;
+            case 5:
+                purchaseBtn.setVisible(false);
+                break;
+            default:
+                break;
         }
     }
 
@@ -187,7 +212,7 @@ public class MgmtProduct extends javax.swing.JPanel {
     public void popupmessage(String infoMessage) {
         JOptionPane.showMessageDialog(null, infoMessage, "REMINDER", JOptionPane.PLAIN_MESSAGE);
     }
-
+    
     private void purchaseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purchaseBtnActionPerformed
         int stock = 0;
         int chosen = 0;
@@ -216,6 +241,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                     popupmessage("Purchased Successful!");
 
                                     sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
+                                    sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString());
                                     init();
                                 } else {
                                     popupwarning("Not enough stock available.");

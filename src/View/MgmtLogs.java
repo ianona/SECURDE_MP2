@@ -143,62 +143,67 @@ public class MgmtLogs extends javax.swing.JPanel {
 
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
         int dialogButton = 0;
-        //clear a single log and archive
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to delete selected logs?", "Warning", dialogButton);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            ArrayList<Logs> logsList = new ArrayList<>();
-            int[] selectedRows = table.getSelectedRows();
-            int columns = 4;
+        int[] selectedRows = table.getSelectedRows();
+        if (selectedRows.length == 0) {
+            JOptionPane.showMessageDialog(null, "No rows selected!", "Warning", dialogButton);
+        } else {
+            //clear a single log and archive
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to delete selected logs? (The logs will be archived into an external file once deleted.", "Warning", dialogButton);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                ArrayList<Logs> logsList = new ArrayList<>();
+                int columns = 4;
 
-            for (int i = 0; i < selectedRows.length; i++) {
-                Logs temp = new Logs("", "");
-                for (int j = 0; j < columns; j++) {
+                for (int i = 0; i < selectedRows.length; i++) {
+                    Logs temp = new Logs("", "");
+                    for (int j = 0; j < columns; j++) {
 //                table.getValueAt(selectedRows[i], columns);
-                    switch (j) {
-                        case 0:
-                            temp.setEvent((String) table.getValueAt(selectedRows[i], j));
-                            break;
-                        case 1:
-                            temp.setUsername((String) table.getValueAt(selectedRows[i], j));
-                            break;
-                        case 2:
-                            temp.setDesc((String) table.getValueAt(selectedRows[i], j));
-                            break;
-                        case 3:
-                            temp.setTimestamp((Timestamp) table.getValueAt(selectedRows[i], j));
-                            break;
-                        default:
-                            break;
+                        switch (j) {
+                            case 0:
+                                temp.setEvent((String) table.getValueAt(selectedRows[i], j));
+                                break;
+                            case 1:
+                                temp.setUsername((String) table.getValueAt(selectedRows[i], j));
+                                break;
+                            case 2:
+                                temp.setDesc((String) table.getValueAt(selectedRows[i], j));
+                                break;
+                            case 3:
+                                temp.setTimestamp((Timestamp) table.getValueAt(selectedRows[i], j));
+                                break;
+                            default:
+                                break;
+                        }
                     }
+                    logsList.add(temp);
                 }
-                logsList.add(temp);
-            }
-            Logger logger = Logger.getLogger("SecurdeLog");
-            FileHandler fh;
+                Logger logger = Logger.getLogger("SecurdeLog");
+                FileHandler fh;
 
-            try {
+                try {
 
-                // This block configure the logger with handler and formatter  
-                fh = new FileHandler("./logs/SecurdeLog.log");
-                logger.addHandler(fh);
-                SimpleFormatter formatter = new SimpleFormatter();
-                fh.setFormatter(formatter);
+                    // This block configure the logger with handler and formatter  
+                    fh = new FileHandler("./logs/SecurdeLog.log");
+                    logger.addHandler(fh);
+                    SimpleFormatter formatter = new SimpleFormatter();
+                    fh.setFormatter(formatter);
 
-            } catch (SecurityException e) {
-                e.printStackTrace();
+                } catch (SecurityException e) {
+                    e.printStackTrace();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            for (int i = 0; i < logsList.size(); i++) {
+                for (int i = 0; i < logsList.size(); i++) {
 //            System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
-                logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
-                sqlite.removeLogs(logsList.get(i));
-            }
+                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
+                    sqlite.removeLogs(logsList.get(i));
+                }
 
-            init();
+                init();
+            }
         }
+
 
     }//GEN-LAST:event_clearBtnActionPerformed
 
