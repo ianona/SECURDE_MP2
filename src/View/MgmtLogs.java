@@ -200,7 +200,7 @@ public class MgmtLogs extends javax.swing.JPanel {
                     logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
                     sqlite.removeLogs(logsList.get(i));
                 }
-
+                SecurityConfig.log(sqlite, 0, "NOTICE", "Logs have been deleted and archived by " + Frame.getCurUser().getUsername());
                 init();
             }
         }
@@ -213,10 +213,14 @@ public class MgmtLogs extends javax.swing.JPanel {
 //            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
             sqlite.DEBUG_MODE = 0;
             SecurityConfig.updateConfig(0);
+            SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned off by " + Frame.getCurUser().getUsername());
+            init();
         } else {
 //            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
             sqlite.DEBUG_MODE = 1;
             SecurityConfig.updateConfig(1);
+            SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned on by " + Frame.getCurUser().getUsername());
+            init();
         }
     }//GEN-LAST:event_debugBtnActionPerformed
 
