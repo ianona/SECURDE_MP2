@@ -54,11 +54,6 @@ public class MgmtLogs extends javax.swing.JPanel {
                 logs.get(nCtr).getTimestamp()});
         }
         
-        debugBtn.setVisible(true);
-        
-        if (Frame.getCurUser().getRole() == 5){
-            debugBtn.setVisible(false);
-        }
     }
 
     /**
