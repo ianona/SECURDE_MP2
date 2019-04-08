@@ -30,7 +30,6 @@ public class StaffHome extends javax.swing.JPanel {
     
     public StaffHome() {
         initComponents();
-        logsBtn.setVisible(false);
         usersBtn.setVisible(false);
     }
     
