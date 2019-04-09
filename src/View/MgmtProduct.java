@@ -64,6 +64,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                 deleteBtn.setVisible(false);
                 break;
             case 3:
+                addBtn.setVisible(false);
                 purchaseBtn.setVisible(false);
                 deleteBtn.setVisible(false);
                 break;
@@ -246,7 +247,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                         popupmessage("Purchased Successful!");
 
                                         sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
-                                        sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString());
+                                        sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString(), Double.parseDouble((String) tableModel.getValueAt(table.getSelectedRow(), 2)));
                                         init();
                                     } else {
                                         SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Restock " + tableModel.getValueAt(table.getSelectedRow(), 0) + " not a successful purchase.");

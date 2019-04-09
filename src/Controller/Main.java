@@ -26,6 +26,7 @@ public class Main {
 //        
 //        // Drop users table if needed
 //        sqlite.dropHistoryTable();
+//        sqlite.createHistoryTable();
 //        sqlite.dropLogsTable();
 //        sqlite.dropProductTable();
 //        sqlite.dropUserTable();
@@ -37,9 +38,9 @@ public class Main {
 //        sqlite.createUserTable();
 //        
 //        // Add sample history
-//        sqlite.addHistory("admin", "Antivirus", 1, "2019-04-03 14:30:00.000");
-//        sqlite.addHistory("manager", "Firewall", 1, "2019-04-03 14:30:01.000");
-//        sqlite.addHistory("staff", "Scanner", 1, "2019-04-03 14:30:02.000");
+//        sqlite.addHistory("admin", "Antivirus", 1, "2019-04-03 14:30:00.000", 500.00);
+//        sqlite.addHistory("manager", "Firewall", 1, "2019-04-03 14:30:01.000", 1000.00);
+//        sqlite.addHistory("staff", "Scanner", 1, "2019-04-03 14:30:02.000", 100.00);
 //        
 //        // Add sample logs
 //        sqlite.addLogs("NOTICE", "admin", "User creation successful", new Timestamp(new Date().getTime()).toString());

@@ -53,7 +53,7 @@ public class MgmtLogs extends javax.swing.JPanel {
                 logs.get(nCtr).getDesc(),
                 logs.get(nCtr).getTimestamp()});
         }
-        
+
     }
 
     /**
@@ -214,17 +214,21 @@ public class MgmtLogs extends javax.swing.JPanel {
         if (sqlite.DEBUG_MODE == 1) {
 //            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
             dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to switch from DEBUG MODE to NON-DEBUG MODE?", "Warning", dialogButton);
-            sqlite.DEBUG_MODE = 0;
-            SecurityConfig.updateConfig(0);
-            SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned off by " + Frame.getCurUser().getUsername());
-            init();
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                sqlite.DEBUG_MODE = 0;
+                SecurityConfig.updateConfig(0);
+                SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned off by " + Frame.getCurUser().getUsername());
+                init();
+            }
         } else {
 //            System.out.println("Debug mode is " + sqlite.DEBUG_MODE + ". Changing value.");
             dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to switch from NON-DEBUG MODE to DEBUG MODE?", "Warning", dialogButton);
-            sqlite.DEBUG_MODE = 1;
-            SecurityConfig.updateConfig(1);
-            SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned on by " + Frame.getCurUser().getUsername());
-            init();
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                sqlite.DEBUG_MODE = 1;
+                SecurityConfig.updateConfig(1);
+                SecurityConfig.log(sqlite, 0, "NOTICE", "DEBUG MODE has been turned on by " + Frame.getCurUser().getUsername());
+                init();
+            }
         }
     }//GEN-LAST:event_debugBtnActionPerformed
 
