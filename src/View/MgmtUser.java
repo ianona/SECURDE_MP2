@@ -107,12 +107,15 @@ public class MgmtUser extends javax.swing.JPanel {
         String[] roles = {"", "Client", "Staff", "Manager", "Admin"};
         User curUser = Frame.getCurUser();
         switch (curUser.getRole()) {
+            // managers can see other managers and lower
             case 4:
-                users = users.stream().filter(u -> u.getRole() < 4 || u.getId() == curUser.getId()).collect(Collectors.toList());
+                users = users.stream().filter(u -> u.getRole() <= 4 || u.getId() == curUser.getId()).collect(Collectors.toList());
                 break;
+            // staff can see other staff and lower
             case 3:
-                users = users.stream().filter(u -> u.getRole() < 3 || u.getId() == curUser.getId()).collect(Collectors.toList());
+                users = users.stream().filter(u -> u.getRole() <= 3 || u.getId() == curUser.getId()).collect(Collectors.toList());
                 break;
+            // clients can only see themselves
             case 2:
                 users = users.stream().filter(u -> u.getId() == curUser.getId()).collect(Collectors.toList());
                 break;
