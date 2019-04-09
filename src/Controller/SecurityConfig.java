@@ -110,9 +110,21 @@ public class SecurityConfig {
             System.out.println("NOT SPECIAL");
             errors.add("Error! Password requires at least 1 special character");
         }
+        //check if is too long
+        if (password.length() >= 128 ){
+            System.out.println("MORE THAN 128 CHARACTERS");
+            errors.add("Error! Password has more than 128 characters");
+        }
         return errors;
     }
-
+    
+    public static Boolean checkUsername(String input){
+                if(input.length() <= 32 && input.length() >= 6 && input.matches("^[A-Z+a-z+0-9]+(?:[\\. _-][A-Za-z0-9]+)*$") && input.matches(".*[A-Za-z].*") && !input.matches("^[0-9]+(?:[\\. _-][A-Za-z0-9]+)*$"))
+            return true;
+        else
+            return false;
+    }
+    
     public static void readDebugMode(SQLite sql) {
         BufferedReader csvReader = null;
         try {
