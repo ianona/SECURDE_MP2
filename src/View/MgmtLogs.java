@@ -146,6 +146,8 @@ public class MgmtLogs extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
+        SecurityConfig changemessage = new SecurityConfig();
+        
         int dialogButton = 0;
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length == 0) {
@@ -172,7 +174,7 @@ public class MgmtLogs extends javax.swing.JPanel {
                                 temp.setDesc((String) table.getValueAt(selectedRows[i], j));
                                 break;
                             case 3:
-                                temp.setTimestamp((Timestamp) table.getValueAt(selectedRows[i], j));
+                                temp.setTimestamp((String) table.getValueAt(selectedRows[i], j));
                                 break;
                             case 4:
                                 temp.setIp((String) table.getValueAt(selectedRows[i], j));
@@ -202,21 +204,31 @@ public class MgmtLogs extends javax.swing.JPanel {
                 }
 
                 System.out.println("REMOVING " + logsList.size() + " LOGS");
+//                System.out.println("START OF FOR LOOP");
+//                for (int i = 0; i < logsList.size(); i++) {
+//                    System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
+//                }
+//                System.out.println("END OF FOR LOOP");
+                System.out.println("LOGLIST SIZE: " + logsList.size());
                 for (int i = 0; i < logsList.size(); i++) {
+
+                    System.out.println("CHECKER");
+                    System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
+//                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3} IP: {4}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp(), logsList.get(i).getIp()});
+
 //            System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
                     Logs curLog = sqlite.getLogByUsernameTimestampIp(logsList.get(i).getUsername(),
                             logsList.get(i).getTimestamp(),
                             logsList.get(i).getIp());
                     System.out.println("REMOVING LOG " + curLog.getId());
-                    System.out.println(curLog.getEvent());
-                    System.out.println(curLog.getUsername());
-                    System.out.println(curLog.getDesc());
-                    System.out.println(curLog.getTimestamp());
 
-                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
+//                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
 //                    sqlite.removeLogs(logsList.get(i));
-                    sqlite.removeLogById(curLog.getId());
-                    System.out.println("REMOVED LOG " + curLog.getId());
+//                    sqlite.removeLogById(curLog.getId());
+
+                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{changemessage.encryptAES(logsList.get(i).getEvent()), changemessage.encryptAES(logsList.get(i).getUsername()), changemessage.encryptAES(logsList.get(i).getDesc()), changemessage.encryptAES(logsList.get(i).getTimestamp().toString())});
+                    sqlite.removeLogs(logsList.get(i));
+                                        System.out.println("REMOVED LOG " + curLog.getId());
 
                 }
                 SecurityConfig.log(sqlite, 0, "NOTICE", "Logs have been deleted and archived by " + Frame.getCurUser().getUsername());

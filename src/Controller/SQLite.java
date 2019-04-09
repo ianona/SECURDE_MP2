@@ -353,7 +353,7 @@ public class SQLite {
         return logs;
     }
 
-    public Logs getLogByUsernameTimestampIp(String username, Timestamp timestamp, String ip) {
+    public Logs getLogByUsernameTimestampIp(String username, String timestamp, String ip) {
         String sql = "SELECT id, event, username, desc, timestamp, ip FROM logs WHERE username = ? and timestamp = ? and ip = ?";
         ArrayList<Logs> logs = new ArrayList<Logs>();
 
@@ -364,7 +364,7 @@ public class SQLite {
 
             System.out.println("FINDING LOG BY:\n" + username + "\n" + timestamp + "\n" + ip);
             pstmt.setString(1, username);
-            pstmt.setString(2, timestamp.toString());
+            pstmt.setString(2, timestamp);
             pstmt.setString(3, ip);
             ResultSet rs = pstmt.executeQuery();
 
@@ -585,7 +585,8 @@ public class SQLite {
 
     public void removeLogs(Logs log) {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
-        String sql = "DELETE FROM logs WHERE event = ? and username = ? and desc = ? and timestamp = ?";
+        System.out.println("Event: " +log.getEvent() + " Username: " +log.getUsername() + " Desc: " + log.getDesc() + " Timestamp: " + log.getTimestamp());
+        String sql = "DELETE FROM logs WHERE username = ? and timestamp = ? and ip = ?";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
@@ -597,7 +598,12 @@ public class SQLite {
             pstmt.setString(3, log.getDesc());
             pstmt.setString(4, log.getTimestamp() + "");
 //            pstmt.setString(5, log.getIp());
-            pstmt.executeUpdate();
+            
+//            pstmt.setString(1, log.getEvent());
+//            pstmt.setString(1, log.getUsername());
+//            pstmt.setString(3, log.getDesc());
+//            pstmt.setString(2, log.getTimestamp()+"");
+//            pstmt.setString(3, log.getIp());
             System.out.println("Event Log " + log.getEvent() + " has been deleted.");
         } catch (Exception ex) {
             ex.printStackTrace();
