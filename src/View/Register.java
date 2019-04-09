@@ -2,6 +2,7 @@ package View;
 
 import Controller.SQLite;
 import Controller.SecurityConfig;
+import Model.User;
 import java.util.List;
 
 public class Register extends javax.swing.JPanel {
@@ -117,17 +118,24 @@ public class Register extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //checks the validation of the password and confirmation
-        SQLite database = new SQLite();
+        SQLite database = Frame.getInstance().getMain().sqlite;
+
         if (database.getUsersByUsername(username.getText()).isEmpty()) {
             List<String> errors = SecurityConfig.checkPassword(username.getText(), password.getText(), confpass.getText());
             //if all of the condition checks, it stores the password
             if (errors.size() == 0) {
                 errorLbl.setVisible(false);
-                frame.registerAction(username.getText(), password.getText(), confpass.getText());
+                String userName = username.getText();
+                String passWord = password.getText();
+                frame.registerAction(userName, passWord, confpass.getText());
                 frame.loginNav();
                 username.setText("");
                 password.setText("");
                 confpass.setText("");
+                User newUser = database.getUsersByUsername(userName).get(0);
+                Frame.setCurUser(newUser);
+                SecurityConfig.log(database, 0, "NOTICE", "Successfully registered for an account");
+                Frame.setCurUser(null);
             } else {
                 System.out.println(errors.size());
                 errorLbl.setText(errors.get(errors.size()-1));

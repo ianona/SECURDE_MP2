@@ -319,6 +319,9 @@ public class Frame extends javax.swing.JFrame {
         SecurityConfig.updateTitle(Frame.getInstance().main.sqlite.DEBUG_MODE);
     }
 
+    public Main getMain() {
+        return main;
+    }    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Container;

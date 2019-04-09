@@ -9,6 +9,7 @@ import Controller.SQLite;
 import Controller.SecurityConfig;
 import Model.User;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.JComboBox;
@@ -65,6 +66,11 @@ public class MgmtUser extends javax.swing.JPanel {
                 lockBtn.setVisible(false);
                 editRoleBtn.setVisible(false);
             }
+            if (curUser.getRole() == 3) {
+                deleteBtn.setVisible(false);
+                lockBtn.setVisible(false);
+                editRoleBtn.setVisible(false);
+            }
         });
 
 //        UNCOMMENT TO DISABLE BUTTONS
@@ -84,6 +90,11 @@ public class MgmtUser extends javax.swing.JPanel {
             editRoleBtn.setVisible(false);
             lockBtn.setVisible(false);
             tableModel.setColumnCount(1);
+        }
+        // staff cannot edit role and lock/unlock
+        if (Frame.getCurUser().getRole() == 3) {
+            editRoleBtn.setVisible(false);
+            lockBtn.setVisible(false);
         }
 
         //      CLEAR TABLE
@@ -240,8 +251,13 @@ public class MgmtUser extends javax.swing.JPanel {
 
     private void editRoleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editRoleBtnActionPerformed
         if (table.getSelectedRow() >= 0) {
-            String[] options = {"1-DISABLED", "2-CLIENT", "3-STAFF", "4-MANAGER", "5-ADMIN"};
-            JComboBox optionList = new JComboBox(options);
+            List<String> options = new ArrayList<>();//{"2-CLIENT", "3-STAFF", "4-MANAGER", "5-ADMIN"};
+            options.add("2-CLIENT");
+            options.add("3-STAFF");
+            options.add("4-MANAGER");
+            if (Frame.getCurUser().getRole() == 5) options.add("5-ADMIN");
+            JComboBox optionList = new JComboBox(options.toArray(new String[0]));
+
             String username = tableModel.getValueAt(table.getSelectedRow(), 0).toString();
             if (Frame.getCurUser().getUsername().equalsIgnoreCase(username)) {
                 JOptionPane.showMessageDialog(null,
@@ -250,10 +266,11 @@ public class MgmtUser extends javax.swing.JPanel {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            
             int curRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
-            optionList.setSelectedIndex(curRole - 1);
+            optionList.setSelectedIndex(curRole - 2);
             String result = (String) JOptionPane.showInputDialog(null, "USER: " + tableModel.getValueAt(table.getSelectedRow(), 0),
-                    "EDIT USER ROLE", JOptionPane.QUESTION_MESSAGE, null, options, options[curRole - 1]);
+                    "EDIT USER ROLE", JOptionPane.QUESTION_MESSAGE, null, options.toArray(new String[0]), options.toArray(new String[0])[curRole - 2]);
 
             if (result != null) {
                 int newRole = Integer.parseInt(result.substring(0, 1));
@@ -263,7 +280,7 @@ public class MgmtUser extends javax.swing.JPanel {
                 System.out.println("Changing role of " + username + " to " + newRole);
                 sqlite.updateRoleByUsername(username, newRole);
                 init();
-                SecurityConfig.log(sqlite, 0, "NOTICE", "Changed role of " + username + " from " + options[curRole - 1] + " to " + options[newRole - 1]);
+                SecurityConfig.log(sqlite, 0, "NOTICE", "Changed role of " + username + " from " + options.toArray(new String[0])[curRole - 2] + " to " + options.toArray(new String[0])[newRole - 2]);
             }
         }
     }//GEN-LAST:event_editRoleBtnActionPerformed
