@@ -21,6 +21,7 @@ public class Logs {
     private String username;
     private String desc;
     private Timestamp timestamp;
+    private String ip;
 
     private SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
     
@@ -38,11 +39,12 @@ public class Logs {
         this.timestamp = new Timestamp(new Date().getTime());
     }
     
-    public Logs(int id, String event, String username, String desc, String timestamp){
+    public Logs(int id, String event, String username, String desc, String timestamp, String ip){
         this.id = id;
         this.event = event;
         this.username = username;
         this.desc = desc;
+        this.ip = ip;
         try {
             this.timestamp = new Timestamp(dateformat.parse(timestamp).getTime());
         } catch (ParseException ex) {
@@ -89,5 +91,12 @@ public class Logs {
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
-    
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 }
