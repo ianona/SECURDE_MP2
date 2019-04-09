@@ -201,6 +201,9 @@ public class SecurityConfig {
         if (time.length() == 22) {
             time = time + "0";
         }
+        if (time.length() == 21) {
+            time = time + "00";
+        }
         User user = Frame.getCurUser();
         try {
             db.addLogs(event + (mode == 1 ? " [DEBUG]" : ""),

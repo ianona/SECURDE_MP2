@@ -344,6 +344,10 @@ public class SQLite {
                 if (temp.getTimestamp().length() == 22){
                     temp.setTimestamp(temp.getTimestamp() + "0");
                 }
+                if (temp.getTimestamp().length() == 21){
+                    temp.setTimestamp(temp.getTimestamp() + "00");
+                }
+                
                 logs.add(temp);
 //                logs.add(new Logs(rs.getInt("id"),
 //                        rs.getString("event"),
@@ -356,36 +360,6 @@ public class SQLite {
             ex.printStackTrace();
         }
         return logs;
-    }
-
-    public Logs getLogByUsernameTimestampIp(String username, String timestamp, String ip) {
-        String sql = "SELECT id, event, username, desc, timestamp, ip FROM logs WHERE username = ? and timestamp = ? and ip = ?";
-        ArrayList<Logs> logs = new ArrayList<Logs>();
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement();
-
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-
-            System.out.println("FINDING LOG BY:\n" + username + "\n" + timestamp + "\n" + ip);
-            pstmt.setString(1, username);
-            pstmt.setString(2, timestamp);
-            pstmt.setString(3, ip);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                logs.add(new Logs(rs.getInt("id"),
-                        rs.getString("event"),
-                        rs.getString("username"),
-                        rs.getString("desc"),
-                        rs.getString("timestamp"),
-                        rs.getString("ip")));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        System.out.println("FOUND " + logs.size() + " MATCHING LOGS");
-        return logs.isEmpty() || logs.size() > 1 ? null : logs.get(0);
     }
 
     public ArrayList<Product> getProduct() {
@@ -592,18 +566,18 @@ public class SQLite {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
 //        System.out.println("Event: " +log.getEvent() + " Username: " +log.getUsername() + " Desc: " + log.getDesc() + " Timestamp: " + log.getTimestamp() + " IP: " + log.getIp());
         String sql = "DELETE FROM logs WHERE username = ? and timestamp = ? and ip = ?";
-
+        System.out.println("Username: " +log.getUsername() + " Timestamp: " + log.getTimestamp() + " IP: " + log.getIp());
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
                 PreparedStatement pstmt = conn.prepareStatement(sql);) {
 //            stmt.execute(sql);
 
-            pstmt.setString(1, log.getEvent());
-            pstmt.setString(2, log.getUsername());
-            pstmt.setString(3, log.getDesc());
-            pstmt.setString(4, log.getTimestamp() + "");
-//            pstmt.setString(5, log.getIp());
-            
+//            pstmt.setString(1, log.getEvent());
+            pstmt.setString(1, log.getUsername());
+//            pstmt.setString(2, log.getDesc());
+            pstmt.setString(2, log.getTimestamp());
+            pstmt.setString(3, log.getIp());
+            pstmt.executeUpdate();
 //            pstmt.setString(1, log.getEvent());
 //            pstmt.setString(1, log.getUsername());
 //            pstmt.setString(3, log.getDesc());
@@ -614,25 +588,7 @@ public class SQLite {
             ex.printStackTrace();
         }
     }
-
-    public void removeLogById(int id) {
-//        String sql = "DELETE FROM users WHERE username='" + username + "';";
-        String sql = "DELETE FROM logs WHERE id = ?";
-
-        try (Connection conn = DriverManager.getConnection(driverURL);
-                //                Statement stmt = conn.createStatement()
-                PreparedStatement pstmt = conn.prepareStatement(sql);) {
-//            stmt.execute(sql);
-
-            pstmt.setInt(1, id);
-//            pstmt.setString(5, log.getIp());
-            pstmt.executeUpdate();
-            System.out.println("Event Log " + id + " has been deleted.");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
+    
     public void removeProduct(String username) {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
         String sql = "DELETE FROM product WHERE name = ?";
