@@ -225,7 +225,7 @@ public class SecurityConfig {
             IvParameterSpec ivspec = new IvParameterSpec(iv);
 
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), salt.getBytes(), 65536, 256);
+            KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), salt.getBytes(), 65536, 128);
             SecretKey tmp = factory.generateSecret(spec);
             SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
@@ -233,7 +233,8 @@ public class SecurityConfig {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+//            System.out.println("Error while encrypting: " + e.toString());
+              e.printStackTrace();
         }
         return null;
     }

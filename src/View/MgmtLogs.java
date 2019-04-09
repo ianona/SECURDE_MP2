@@ -8,6 +8,7 @@ package View;
 import Controller.SQLite;
 import Controller.SecurityConfig;
 import Model.Logs;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -187,15 +188,17 @@ public class MgmtLogs extends javax.swing.JPanel {
                 }
                 Logger logger = Logger.getLogger("SecurdeLog");
                 FileHandler fh;
-
+                File file = new File("./logs/SecurdeLog.log");
+                file.setWritable(true);
                 try {
 
                     // This block configure the logger with handler and formatter  
-                    fh = new FileHandler("./logs/SecurdeLog.log");
+                    fh = new FileHandler("./logs/SecurdeLog.log", true);
                     logger.addHandler(fh);
                     SimpleFormatter formatter = new SimpleFormatter();
                     fh.setFormatter(formatter);
-
+                    
+                    
                 } catch (SecurityException e) {
                     e.printStackTrace();
 
@@ -207,20 +210,16 @@ public class MgmtLogs extends javax.swing.JPanel {
                 for (int i = 0; i < logsList.size(); i++) {
 
                     System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp()  + " IP: " + logsList.get(i).getIp());
-//                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3} IP: {4}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp(), logsList.get(i).getIp()});
-
-//            System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
-
-
-//                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
+//                  logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
 
                     sqlite.removeLogs(logsList.get(i));
-                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{changemessage.encryptAES(logsList.get(i).getEvent()), changemessage.encryptAES(logsList.get(i).getUsername()), changemessage.encryptAES(logsList.get(i).getDesc()), changemessage.encryptAES(logsList.get(i).getTimestamp().toString())});
-//                    sqlite.removeLogs(logsList.get(i));
+                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3} IP: {4}", new Object[]{changemessage.encryptAES(logsList.get(i).getEvent()), changemessage.encryptAES(logsList.get(i).getUsername()), changemessage.encryptAES(logsList.get(i).getDesc()), changemessage.encryptAES(logsList.get(i).getTimestamp().toString()), changemessage.encryptAES(logsList.get(i).getIp())});
+//                  sqlite.removeLogs(logsList.get(i));
 
                 }
                 SecurityConfig.log(sqlite, 0, "NOTICE", "Logs have been deleted and archived by " + Frame.getCurUser().getUsername());
                 init();
+                file.setReadOnly();
             }
         }
 
