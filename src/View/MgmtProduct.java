@@ -240,7 +240,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                 chosen = Integer.parseInt(stockFld.getText());
                                 stock = (int) tableModel.getValueAt(table.getSelectedRow(), 1);
 
-                                if (stock > 0) {
+                                if (chosen > 0) {
                                     if (stock >= chosen) {
                                         SecurityConfig.log(sqlite, 0, "NOTICE", chosen + " items of " + tableModel.getValueAt(table.getSelectedRow(), 0) + " purchased");
 
@@ -255,7 +255,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                         popupwarning("Not enough stock available.");
                                     }
                                 } else {
-                                    popuperror("No negative values!");
+                                    popuperror("Invalid Input!");
                                 }
 
                             } else {
