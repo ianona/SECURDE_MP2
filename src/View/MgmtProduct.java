@@ -237,7 +237,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                             chosen = Integer.parseInt(stockFld.getText());
                             stock = (int) tableModel.getValueAt(table.getSelectedRow(), 1);
 
-                            if (stock >= 0) {
+                            if (stock > 0) {
                                 if (stock >= chosen) {
                                     popupmessage("Purchased Successful!");
 
