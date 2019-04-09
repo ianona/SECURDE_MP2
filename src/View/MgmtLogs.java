@@ -51,7 +51,8 @@ public class MgmtLogs extends javax.swing.JPanel {
                 logs.get(nCtr).getEvent(),
                 logs.get(nCtr).getUsername(),
                 logs.get(nCtr).getDesc(),
-                logs.get(nCtr).getTimestamp()});
+                logs.get(nCtr).getTimestamp(),
+                logs.get(nCtr).getIp()});
         }
         
     }
@@ -71,17 +72,17 @@ public class MgmtLogs extends javax.swing.JPanel {
         table.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Event", "Username", "Description", "Timestamp"
+                "Event", "Username", "Description", "Timestamp", "IP"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {

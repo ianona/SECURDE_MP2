@@ -20,7 +20,7 @@ public class Main {
     public void init() {
         // Initialize a driver object
         sqlite = new SQLite();
-
+        
 //        // Create a database
 //        sqlite.createNewDatabase();
 //        

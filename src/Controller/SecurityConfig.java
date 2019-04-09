@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -183,7 +185,15 @@ public class SecurityConfig {
             return;
         }
         User user = Frame.getCurUser();
-        db.addLogs(event + (mode == 1 ? " [DEBUG]" : ""), user != null ? user.getUsername() : "---", desc, new Timestamp(new Date().getTime()).toString());
+        try {
+            db.addLogs(event + (mode == 1 ? " [DEBUG]" : ""),
+                    user != null ? user.getUsername() : "---",
+                    desc,
+                    new Timestamp(new Date().getTime()).toString(),
+                    InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(SecurityConfig.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

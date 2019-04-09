@@ -54,7 +54,8 @@ public class SQLite {
                 rs.getString("event"),
                 rs.getString("username"),
                 rs.getString("desc"),
-                rs.getString("timestamp"));
+                rs.getString("timestamp"),
+                rs.getString("ip"));
     }
 
     public History toHistory(ResultSet rs) throws SQLException {
@@ -100,7 +101,8 @@ public class SQLite {
                 + " event TEXT NOT NULL,\n"
                 + " username TEXT NOT NULL,\n"
                 + " desc TEXT NOT NULL,\n"
-                + " timestamp TEXT NOT NULL\n"
+                + " timestamp TEXT NOT NULL,\n"
+                + " ip TEXT NOT NULL\n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
@@ -108,6 +110,7 @@ public class SQLite {
             stmt.execute(sql);
             System.out.println("Table logs in database.db created.");
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -209,9 +212,9 @@ public class SQLite {
         }
     }
 
-    public void addLogs(String event, String username, String desc, String timestamp) {
+    public void addLogs(String event, String username, String desc, String timestamp, String ip) {
 //        String sql = "INSERT INTO logs(event,username,desc,timestamp) VALUES('" + event + "','" + username + "','" + desc + "','" + timestamp + "')";
-        String sql = "INSERT INTO logs(event,username,desc,timestamp) VALUES(?, ?, ?, ?)";
+        String sql = "INSERT INTO logs(event,username,desc,timestamp,ip) VALUES(?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
@@ -222,6 +225,7 @@ public class SQLite {
             pstmt.setString(2, username);
             pstmt.setString(3, desc);
             pstmt.setString(4, timestamp);
+            pstmt.setString(5, ip);
 
             pstmt.executeUpdate();
         } catch (Exception ex) {
@@ -323,7 +327,7 @@ public class SQLite {
     }
 
     public ArrayList<Logs> getLogs() {
-        String sql = "SELECT id, event, username, desc, timestamp FROM logs";
+        String sql = "SELECT id, event, username, desc, timestamp, ip FROM logs";
         ArrayList<Logs> logs = new ArrayList<Logs>();
 
         try (Connection conn = DriverManager.getConnection(driverURL);
@@ -335,7 +339,8 @@ public class SQLite {
                         rs.getString("event"),
                         rs.getString("username"),
                         rs.getString("desc"),
-                        rs.getString("timestamp")));
+                        rs.getString("timestamp"),
+                        rs.getString("ip")));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
