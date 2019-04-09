@@ -6,6 +6,7 @@
 package View;
 
 import Controller.SQLite;
+import Controller.SecurityConfig;
 import Model.Product;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -240,12 +241,16 @@ public class MgmtProduct extends javax.swing.JPanel {
 
                                 if (stock > 0) {
                                     if (stock >= chosen) {
+                                        SecurityConfig.log(sqlite, 0, "NOTICE", chosen + " items of " + tableModel.getValueAt(table.getSelectedRow(), 0) + " purchased");
+
                                         popupmessage("Purchased Successful!");
 
                                         sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
                                         sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString());
                                         init();
                                     } else {
+                                        SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Restock " + tableModel.getValueAt(table.getSelectedRow(), 0) + " not a successful purchase.");
+
                                         popupwarning("Not enough stock available.");
                                     }
                                 } else {
@@ -263,10 +268,11 @@ public class MgmtProduct extends javax.swing.JPanel {
                     //System.out.println(stockFld.getText());
                 }
             } else {
-                popupmessage("Please select any given product.");
+                popupwarning("No Stocks Available");
             }
         } else {
-            popupwarning("No Stocks Available");
+            popupmessage("Please select any given product.");
+
         }
     }//GEN-LAST:event_purchaseBtnActionPerformed
 
@@ -310,7 +316,9 @@ public class MgmtProduct extends javax.swing.JPanel {
                                     price = Math.floor(price * 100) / 100;
                                     System.out.println(price);
 
-                                    popupmessage("Edit Successful!");
+                                    popupmessage("Product Added Successful!");
+
+                                    SecurityConfig.log(sqlite, 0, "NOTICE", "Product " + nameFld.getText() + " added successfully. Stock = " + newnumstock + " Price = " + newprice);
 
                                     sqlite.addProduct(nameFld.getText(), Integer.parseInt(newnumstock), price);
                                     init();
@@ -319,7 +327,9 @@ public class MgmtProduct extends javax.swing.JPanel {
                                     price = Math.floor(price * 100) / 100;
                                     System.out.println(price);
 
-                                    popupmessage("Edit Successful!");
+                                    popupmessage("Product Added Successful!");
+
+                                    SecurityConfig.log(sqlite, 0, "NOTICE", "Product " + nameFld.getText() + " added successfully. Stock = " + newnumstock + " Price = " + newprice);
 
                                     sqlite.addProduct(nameFld.getText(), Integer.parseInt(newnumstock), price);
                                     init();
@@ -329,6 +339,8 @@ public class MgmtProduct extends javax.swing.JPanel {
                                     System.out.println(price);
 
                                     popupmessage("Product Added Successful!");
+
+                                    SecurityConfig.log(sqlite, 0, "NOTICE", "Product " + nameFld.getText() + " added successfully. Stock = " + newnumstock + " Price = " + newprice);
 
                                     sqlite.addProduct(nameFld.getText(), Integer.parseInt(newnumstock), price);
                                     init();
@@ -343,6 +355,8 @@ public class MgmtProduct extends javax.swing.JPanel {
                         popuperror("Invalid input!");
                     }
                 } else {
+                    SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Product name " + nameFld.getText() + " already taken, product not added.");
+
                     popuperror("Product name not unique, choose something else.");
                 }
             }
@@ -398,6 +412,8 @@ public class MgmtProduct extends javax.swing.JPanel {
 
                                         popupmessage("Edit Successful!");
 
+                                        SecurityConfig.log(sqlite, 0, "NOTICE", "Product " + nameFld.getText() + " edited successfully. Stock = " + newnumstock + " Price = " + newprice);
+
                                         sqlite.editProduct(oldname, nameFld.getText(), Integer.parseInt(newnumstock), price);
                                         init();
                                     } else if (curPernum) {
@@ -407,6 +423,8 @@ public class MgmtProduct extends javax.swing.JPanel {
 
                                         popupmessage("Edit Successful!");
 
+                                        SecurityConfig.log(sqlite, 0, "NOTICE", "Product " + nameFld.getText() + " edited successfully. Stock = " + newnumstock + " Price = " + newprice);
+
                                         sqlite.editProduct(oldname, nameFld.getText(), Integer.parseInt(newnumstock), price);
                                         init();
                                     } else if (curAllnum) {
@@ -415,6 +433,8 @@ public class MgmtProduct extends javax.swing.JPanel {
                                         System.out.println(price);
 
                                         popupmessage("Edit Successful!");
+
+                                        SecurityConfig.log(sqlite, 0, "NOTICE", "Product " + nameFld.getText() + " edited successfully. Stock = " + newnumstock + " Price = " + newprice);
 
                                         sqlite.editProduct(oldname, nameFld.getText(), Integer.parseInt(newnumstock), price);
                                         init();
@@ -429,6 +449,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                             popuperror("Invalid input!");
                         }
                     } else {
+                        SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Product name " + nameFld.getText() + " already taken, product not edited.");
                         popuperror("Product name not unique, choose something else.");
                     }
                 }
@@ -445,6 +466,8 @@ public class MgmtProduct extends javax.swing.JPanel {
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         if (table.getSelectedRow() >= 0) {
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tableModel.getValueAt(table.getSelectedRow(), 0) + "?", "DELETE PRODUCT", JOptionPane.YES_NO_OPTION);
+
+            SecurityConfig.log(sqlite, 0, "NOTICE", "Deleted " + tableModel.getValueAt(table.getSelectedRow(), 0) + " with " + tableModel.getValueAt(table.getSelectedRow(), 1) + " in stock at the price of " + tableModel.getValueAt(table.getSelectedRow(), 2));
 
             if (result == JOptionPane.YES_OPTION) {
                 sqlite.removeProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0));
