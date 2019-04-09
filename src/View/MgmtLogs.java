@@ -197,7 +197,7 @@ public class MgmtLogs extends javax.swing.JPanel {
                     logger.addHandler(fh);
                     SimpleFormatter formatter = new SimpleFormatter();
                     fh.setFormatter(formatter);
-                    
+                    fh.close();
                     
                 } catch (SecurityException e) {
                     e.printStackTrace();
