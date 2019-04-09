@@ -247,7 +247,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                         popupmessage("Purchased Successful!");
 
                                         sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
-                                        sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString(), Double.parseDouble((String) tableModel.getValueAt(table.getSelectedRow(), 2)));
+                                        sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString(), Double.parseDouble(tableModel.getValueAt(table.getSelectedRow(), 2).toString()));
                                         init();
                                     } else {
                                         SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Restock " + tableModel.getValueAt(table.getSelectedRow(), 0) + " not a successful purchase.");
@@ -263,6 +263,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                             }
                         } catch (Exception e) {
                             popuperror("Exceeding value!");
+                            e.printStackTrace();
                         }
                     }
 

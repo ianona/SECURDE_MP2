@@ -197,7 +197,7 @@ public class SQLite {
     // add entry to Tables
     public void addHistory(String username, String name, int stock, String timestamp, double price) {
 //        String sql = "INSERT INTO history(username,name,stock,timestamp) VALUES('" + username + "','" + name + "','" + stock + "','" + timestamp + "')";
-        String sql = "INSERT INTO history(username,name,stock,timestamp,price) VALUES(?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO history(username,name,stock,price,timestamp) VALUES(?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
@@ -207,8 +207,8 @@ public class SQLite {
             pstmt.setString(1, username);
             pstmt.setString(2, name);
             pstmt.setInt(3, stock);
-            pstmt.setString(4, timestamp);
-            pstmt.setDouble(5, price);
+            pstmt.setDouble(4, price);
+            pstmt.setString(5, timestamp);
             pstmt.executeUpdate();
         } catch (Exception ex) {
         }
