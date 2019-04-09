@@ -153,7 +153,7 @@ public class MgmtLogs extends javax.swing.JPanel {
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to delete selected logs? (The logs will be archived into an external file once deleted).", "Warning", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 ArrayList<Logs> logsList = new ArrayList<>();
-                int columns = 4;
+                int columns = 5;
 
                 for (int i = 0; i < selectedRows.length; i++) {
                     Logs temp = new Logs("", "");
@@ -170,8 +170,10 @@ public class MgmtLogs extends javax.swing.JPanel {
                                 temp.setDesc((String) table.getValueAt(selectedRows[i], j));
                                 break;
                             case 3:
-                                temp.setTimestamp((Timestamp) table.getValueAt(selectedRows[i], j));
+                                temp.setTimestamp((String) table.getValueAt(selectedRows[i], j));
                                 break;
+                            case 4:
+                                temp.setIp((String) table.getValueAt(selectedRows[i], j));
                             default:
                                 break;
                         }
@@ -195,10 +197,16 @@ public class MgmtLogs extends javax.swing.JPanel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+//                System.out.println("START OF FOR LOOP");
+//                for (int i = 0; i < logsList.size(); i++) {
+//                    System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
+//                }
+//                System.out.println("END OF FOR LOOP");
+                System.out.println("LOGLIST SIZE: " + logsList.size());
                 for (int i = 0; i < logsList.size(); i++) {
-//            System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
-                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
+                    System.out.println("CHECKER");
+                    System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp());
+                    logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3} IP: {4}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp(), logsList.get(i).getIp()});
                     sqlite.removeLogs(logsList.get(i));
                 }
                 SecurityConfig.log(sqlite, 0, "NOTICE", "Logs have been deleted and archived by " + Frame.getCurUser().getUsername());

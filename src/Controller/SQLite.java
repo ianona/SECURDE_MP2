@@ -560,18 +560,19 @@ public class SQLite {
     
     public void removeLogs(Logs log) {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
-        String sql = "DELETE FROM logs WHERE event = ? and username = ? and desc = ? and timestamp = ?";
+        System.out.println("Event: " +log.getEvent() + " Username: " +log.getUsername() + " Desc: " + log.getDesc() + " Timestamp: " + log.getTimestamp());
+        String sql = "DELETE FROM logs WHERE username = ? and timestamp = ? and ip = ?";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
                 PreparedStatement pstmt = conn.prepareStatement(sql);) {
 //            stmt.execute(sql);
 
-            pstmt.setString(1, log.getEvent());
-            pstmt.setString(2, log.getUsername());
-            pstmt.setString(3, log.getDesc());
-            pstmt.setString(4, log.getTimestamp()+"");
-//            pstmt.setString(5, log.getIp());
+//            pstmt.setString(1, log.getEvent());
+            pstmt.setString(1, log.getUsername());
+//            pstmt.setString(3, log.getDesc());
+            pstmt.setString(2, log.getTimestamp()+"");
+            pstmt.setString(3, log.getIp());
             pstmt.executeUpdate();
             System.out.println("Event Log " + log.getEvent() + " has been deleted.");
         } catch (Exception ex) {
