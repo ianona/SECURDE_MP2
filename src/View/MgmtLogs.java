@@ -150,7 +150,7 @@ public class MgmtLogs extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "No rows selected!", "Warning", dialogButton);
         } else {
             //clear a single log and archive
-            int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to delete selected logs? (The logs will be archived into an external file once deleted.", "Warning", dialogButton);
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to delete selected logs? (The logs will be archived into an external file once deleted).", "Warning", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 ArrayList<Logs> logsList = new ArrayList<>();
                 int columns = 4;
