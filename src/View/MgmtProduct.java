@@ -55,7 +55,7 @@ public class MgmtProduct extends javax.swing.JPanel {
         addBtn.setVisible(true);
         editBtn.setVisible(true);
         deleteBtn.setVisible(true);
-        
+
         switch (Frame.getCurUser().getRole()) {
             case 2:
                 addBtn.setVisible(false);
@@ -213,7 +213,7 @@ public class MgmtProduct extends javax.swing.JPanel {
     public void popupmessage(String infoMessage) {
         JOptionPane.showMessageDialog(null, infoMessage, "REMINDER", JOptionPane.PLAIN_MESSAGE);
     }
-    
+
     private void purchaseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purchaseBtnActionPerformed
         int stock = 0;
         int chosen = 0;
@@ -222,47 +222,51 @@ public class MgmtProduct extends javax.swing.JPanel {
             JTextField stockFld = new JTextField("");
             designer(stockFld, "PRODUCT STOCK");
 
-            Object[] message = {
-                "How many " + tableModel.getValueAt(table.getSelectedRow(), 0) + " do you want to purchase?", stockFld
-            };
+            if ((int) tableModel.getValueAt(table.getSelectedRow(), 1) != 0) {
+                Object[] message = {
+                    "How many " + tableModel.getValueAt(table.getSelectedRow(), 0) + " do you want to purchase?", stockFld
+                };
 
-            int result = JOptionPane.showConfirmDialog(null, message, "PURCHASE PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
+                int result = JOptionPane.showConfirmDialog(null, message, "PURCHASE PRODUCT", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 
-            if (result == JOptionPane.OK_OPTION) {
-                if (stockFld.getText().equals("")) {
-                    popuperror("Field empty, please fill it up.");
-                } else {
-                    try {
-                        if (stockFld.getText().matches("[\\d]+")) {
-                            chosen = Integer.parseInt(stockFld.getText());
-                            stock = (int) tableModel.getValueAt(table.getSelectedRow(), 1);
+                if (result == JOptionPane.OK_OPTION) {
+                    if (stockFld.getText().equals("")) {
+                        popuperror("Field empty, please fill it up.");
+                    } else {
+                        try {
+                            if (stockFld.getText().matches("[\\d]+")) {
+                                chosen = Integer.parseInt(stockFld.getText());
+                                stock = (int) tableModel.getValueAt(table.getSelectedRow(), 1);
 
-                            if (stock > 0) {
-                                if (stock >= chosen) {
-                                    popupmessage("Purchased Successful!");
+                                if (stock > 0) {
+                                    if (stock >= chosen) {
+                                        popupmessage("Purchased Successful!");
 
-                                    sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
-                                    sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString());
-                                    init();
+                                        sqlite.sellProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0), stock - chosen);
+                                        sqlite.addHistory(Frame.getCurUser().getUsername(), (String) tableModel.getValueAt(table.getSelectedRow(), 0), chosen, new Timestamp(new Date().getTime()).toString());
+                                        init();
+                                    } else {
+                                        popupwarning("Not enough stock available.");
+                                    }
                                 } else {
-                                    popupwarning("Not enough stock available.");
+                                    popuperror("No negative values!");
                                 }
+
                             } else {
-                                popuperror("No negative values!");
+                                popuperror("Only numerical values are allowed.");
                             }
-
-                        } else {
-                            popuperror("Only numerical values are allowed.");
+                        } catch (Exception e) {
+                            popuperror("Exceeding value!");
                         }
-                    } catch (Exception e) {
-                        popuperror("Exceeding value!");
                     }
-                }
 
-                //System.out.println(stockFld.getText());
+                    //System.out.println(stockFld.getText());
+                }
+            } else {
+                popupmessage("Please select any given product.");
             }
         } else {
-            popupmessage("Please select any given product.");
+            popupwarning("No Stocks Available");
         }
     }//GEN-LAST:event_purchaseBtnActionPerformed
 
