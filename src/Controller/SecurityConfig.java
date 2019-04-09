@@ -17,18 +17,30 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.KeySpec;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
  * @author ianona
  */
 public class SecurityConfig {
+
+//AES 256 Encryption secret code
+    private final String secretKey = "fritz'sbestsquad";
+    private final String salt = "choonapena";
 
     public static String hash(String password) {
         //link to how to do SHA-512 encryption (https://www.geeksforgeeks.org/sha-512-hash-in-java/)
@@ -142,8 +154,8 @@ public class SecurityConfig {
         }
         updateTitle(debugMode);
     }
-    
-    public static void updateTitle(int mode){
+
+    public static void updateTitle(int mode) {
         Frame.getInstance().setTitle("SECURDE - SECURITY Svcs");
         if (mode == 1 && Frame.getCurUser() != null && Frame.getCurUser().getRole() == 5) {
             Frame.getInstance().setTitle("SECURDE - SECURITY Svcs [DEBUG MODE]");
@@ -154,7 +166,7 @@ public class SecurityConfig {
         FileWriter csvWriter = null;
         try {
             csvWriter = new FileWriter("./userArchive.csv", true);
-            
+
             csvWriter.append("\n");
             csvWriter.append("" + user.getId());
             csvWriter.append(",");
@@ -195,5 +207,56 @@ public class SecurityConfig {
             Logger.getLogger(SecurityConfig.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    //link for AES 256 tutorial https://howtodoinjava.com/security/aes-256-encryption-decryption/
+    //AES 256 encryption
+    public String encryptAES(String strToEncrypt) {
+        String secret = this.secretKey;
+        try {
+            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            IvParameterSpec ivspec = new IvParameterSpec(iv);
 
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), salt.getBytes(), 65536, 256);
+            SecretKey tmp = factory.generateSecret(spec);
+            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+        } catch (Exception e) {
+            System.out.println("Error while encrypting: " + e.toString());
+        }
+        return null;
+    }
+
+    //AES 256 decryption
+    public String decryptAES(String strToDecrypt) {
+        String secret = this.secretKey;
+        try {
+            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            IvParameterSpec ivspec = new IvParameterSpec(iv);
+
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), salt.getBytes(), 65536, 256);
+            SecretKey tmp = factory.generateSecret(spec);
+            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+        } catch (Exception e) {
+            System.out.println("Error while decrypting: " + e.toString());
+        }
+        return null;
+    }
+    
+    public void testingAES()
+    {
+        String temp = "This is the best whatever chuchu";
+        
+        System.out.println(encryptAES(temp));
+        
+        System.out.println(decryptAES(encryptAES(temp)));
+    }
 }
