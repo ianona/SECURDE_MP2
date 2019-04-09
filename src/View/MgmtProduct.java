@@ -469,11 +469,10 @@ public class MgmtProduct extends javax.swing.JPanel {
         if (table.getSelectedRow() >= 0) {
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tableModel.getValueAt(table.getSelectedRow(), 0) + "?", "DELETE PRODUCT", JOptionPane.YES_NO_OPTION);
 
-            SecurityConfig.log(sqlite, 0, "NOTICE", "Deleted " + tableModel.getValueAt(table.getSelectedRow(), 0) + " with " + tableModel.getValueAt(table.getSelectedRow(), 1) + " in stock at the price of " + tableModel.getValueAt(table.getSelectedRow(), 2));
-
             if (result == JOptionPane.YES_OPTION) {
                 sqlite.removeProduct((String) tableModel.getValueAt(table.getSelectedRow(), 0));
                 popupmessage("Deleted Successful!");
+                SecurityConfig.log(sqlite, 0, "NOTICE", "Deleted " + tableModel.getValueAt(table.getSelectedRow(), 0) + " with " + tableModel.getValueAt(table.getSelectedRow(), 1) + " in stock at the price of " + tableModel.getValueAt(table.getSelectedRow(), 2));
                 init();
                 //System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
             }
