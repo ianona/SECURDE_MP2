@@ -196,18 +196,23 @@ public class SecurityConfig {
         if (mode == 1 && db.DEBUG_MODE == 0) {
             return;
         }
+        String time = new Timestamp(new Date().getTime()).toString();
+        System.out.println("TIME NOW: " + time);
+        if (time.length() == 22) {
+            time = time + "0";
+        }
         User user = Frame.getCurUser();
         try {
             db.addLogs(event + (mode == 1 ? " [DEBUG]" : ""),
                     user != null ? user.getUsername() : "---",
                     desc,
-                    new Timestamp(new Date().getTime()).toString(),
+                    time,
                     InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException ex) {
             Logger.getLogger(SecurityConfig.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //link for AES 256 tutorial https://howtodoinjava.com/security/aes-256-encryption-decryption/
     //AES 256 encryption
     public String encryptAES(String strToEncrypt) {
@@ -250,13 +255,12 @@ public class SecurityConfig {
         }
         return null;
     }
-    
-    public void testingAES()
-    {
+
+    public void testingAES() {
         String temp = "This is the best whatever chuchu";
-        
+
         System.out.println(encryptAES(temp));
-        
+
         System.out.println(decryptAES(encryptAES(temp)));
     }
 }

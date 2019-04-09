@@ -339,12 +339,17 @@ public class SQLite {
                 ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                logs.add(new Logs(rs.getInt("id"),
-                        rs.getString("event"),
-                        rs.getString("username"),
-                        rs.getString("desc"),
-                        rs.getString("timestamp"),
-                        rs.getString("ip")));
+                Logs temp = toLog(rs);
+                if (temp.getTimestamp().length() == 22){
+                    temp.setTimestamp(temp.getTimestamp() + "0");
+                }
+                logs.add(temp);
+//                logs.add(new Logs(rs.getInt("id"),
+//                        rs.getString("event"),
+//                        rs.getString("username"),
+//                        rs.getString("desc"),
+//                        rs.getString("timestamp"),
+//                        rs.getString("ip")));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -560,7 +565,7 @@ public class SQLite {
     
     public void removeLogs(Logs log) {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
-        System.out.println("Event: " +log.getEvent() + " Username: " +log.getUsername() + " Desc: " + log.getDesc() + " Timestamp: " + log.getTimestamp());
+//        System.out.println("Event: " +log.getEvent() + " Username: " +log.getUsername() + " Desc: " + log.getDesc() + " Timestamp: " + log.getTimestamp() + " IP: " + log.getIp());
         String sql = "DELETE FROM logs WHERE username = ? and timestamp = ? and ip = ?";
 
         try (Connection conn = DriverManager.getConnection(driverURL);

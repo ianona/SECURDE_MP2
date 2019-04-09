@@ -152,8 +152,8 @@ public class Login extends javax.swing.JPanel {
         ArrayList<User> users = connection.getUsersByUsernameAndPassword(username, password);
 
         //debuggin purpose for AES 256
-        SecurityConfig aes = new SecurityConfig();
-        aes.testingAES();
+//        SecurityConfig aes = new SecurityConfig();
+//        aes.testingAES();
 
         if (users.size() == 1) {
 //            if (users.get(0).getRole() != 1) {
