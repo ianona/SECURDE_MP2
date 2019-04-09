@@ -233,7 +233,8 @@ public class SecurityConfig {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+//            System.out.println("Error while encrypting: " + e.toString());
+              e.printStackTrace();
         }
         return null;
     }
