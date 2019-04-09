@@ -99,10 +99,7 @@ public class Main {
         // Initialize User Interface
         Frame frame = new Frame();
         frame.init(this);
-        frame.setTitle("SECURDE - SECURITY Svcs");
-        if (sqlite.DEBUG_MODE == 1) {
-            frame.setTitle("SECURDE - SECURITY Svcs [DEBUG MODE]");
-        }
+        SecurityConfig.updateTitle(sqlite.DEBUG_MODE);
     }
 
 }

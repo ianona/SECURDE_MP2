@@ -213,7 +213,7 @@ public class Frame extends javax.swing.JFrame {
         int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?", "Logout", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
         if (result == JOptionPane.OK_OPTION) {
             frameView.show(Container, "loginPnl");
-
+            setCurUser(null);
         }
     }//GEN-LAST:event_logoutBtnActionPerformed
 
@@ -316,6 +316,7 @@ public class Frame extends javax.swing.JFrame {
 
     public static void setCurUser(User curUser) {
         Frame.curUser = curUser;
+        SecurityConfig.updateTitle(Frame.getInstance().main.sqlite.DEBUG_MODE);
     }
 
 

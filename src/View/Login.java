@@ -1,7 +1,7 @@
-
 package View;
 
 import Controller.SQLite;
+import Controller.SecurityConfig;
 import Model.User;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -21,10 +21,12 @@ public class Login extends javax.swing.JPanel {
 //    private Logger logger;
     private int lock;
     private SQLite connection;
+
     class LockTask extends TimerTask {
-        public void run(){
+
+        public void run() {
             lock--;
-            if (lock <= 0){
+            if (lock <= 0) {
                 attempts++;
                 jButton2.setEnabled(true);
                 errorLbl.setVisible(false);
@@ -35,11 +37,11 @@ public class Login extends javax.swing.JPanel {
             }
         }
     };
-    
-    public void init (SQLite sqlite){
+
+    public void init(SQLite sqlite) {
         this.connection = sqlite;
     }
-    
+
     public Login() {
         initComponents();
         errorLbl.setVisible(false);
@@ -149,18 +151,7 @@ public class Login extends javax.swing.JPanel {
         String username = jTextField1.getText().toLowerCase();
         ArrayList<User> users = connection.getUsersByUsernameAndPassword(username, password);
 
-        if (attempts % 5 == 0 && attempts > 0) {
-            //errorLbl.setText("Too many failed attempts, you can no longer access the system");
-//            logger.info("Too many failed attempts, you can no longer access the system");
-            jButton2.setEnabled(false);
-            Timer timer = new Timer();
-            lock = 30 * (attempts / 5);
-            errorLbl.setText("Too many tries! Locked for " + lock + " seconds");
-            errorLbl.setVisible(true);
-            TimerTask lockTask = new LockTask();
-            timer.scheduleAtFixedRate(lockTask, 1000,1000);
-            //errorLbl.setVisible(true);
-        } else if (users.size() == 1) {
+        if (users.size() == 1) {
 //            if (users.get(0).getRole() != 1) {
             if (users.get(0).getLocked() == 0) {
                 attempts = 0;
@@ -169,12 +160,16 @@ public class Login extends javax.swing.JPanel {
                 jTextField1.setText("");
                 jTextField2.setText("");
                 frame.mainNav(users.get(0));
+                SecurityConfig.log(connection, 0, "NOTICE", "Successfully logged in");
 //                logger.info("Logged in as " + users.get(0).getUsername());
             } else {
                 System.out.println("LOGIN ERROR: Account is locked");
 //                logger.info("LOGIN ERROR: Account is disabled");
                 errorLbl.setText("Error! Account is locked");
                 errorLbl.setVisible(true);
+                Frame.setCurUser(users.get(0));
+                SecurityConfig.log(connection, 1, "FAILED ATTEMPT", "Failed to log in due to locked account");
+                Frame.setCurUser(null);
             }
         } else {
             System.out.println("USERS SIZE:" + users.size());
@@ -183,6 +178,28 @@ public class Login extends javax.swing.JPanel {
             attempts++;
             errorLbl.setText("Error! Invalid credentials");
             errorLbl.setVisible(true);
+
+            ArrayList<User> usersCheck = connection.getUsersByUsername(username);
+            if (usersCheck.size() == 1) {
+                Frame.setCurUser(usersCheck.get(0));
+                SecurityConfig.log(connection, 0, "FAILED ATTEMPT", "Failed to log in due to invalid password");
+                Frame.setCurUser(null);
+            } else {
+                SecurityConfig.log(connection, 1, "FAILED ATTEMPT", "Failed to log in due to invalid credentials");
+
+            }
+            if (attempts % 5 == 0 && attempts > 0) {
+                //errorLbl.setText("Too many failed attempts, you can no longer access the system");
+//            logger.info("Too many failed attempts, you can no longer access the system");
+                jButton2.setEnabled(false);
+                Timer timer = new Timer();
+                lock = 30 * (attempts / 5);
+                errorLbl.setText("Too many tries! Locked for " + lock + " seconds");
+                errorLbl.setVisible(true);
+                TimerTask lockTask = new LockTask();
+                timer.scheduleAtFixedRate(lockTask, 1000, 1000);
+                //errorLbl.setVisible(true);
+            }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 

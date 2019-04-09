@@ -138,8 +138,12 @@ public class SecurityConfig {
                 Logger.getLogger(SQLite.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        updateTitle(debugMode);
+    }
+    
+    public static void updateTitle(int mode){
         Frame.getInstance().setTitle("SECURDE - SECURITY Svcs");
-        if (debugMode == 1) {
+        if (mode == 1 && Frame.getCurUser() != null && Frame.getCurUser().getRole() == 5) {
             Frame.getInstance().setTitle("SECURDE - SECURITY Svcs [DEBUG MODE]");
         }
     }

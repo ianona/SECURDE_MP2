@@ -84,7 +84,7 @@ public class ClientHome extends javax.swing.JPanel {
 
         usersBtn.setBackground(new java.awt.Color(255, 255, 255));
         usersBtn.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        usersBtn.setText("USERS");
+        usersBtn.setLabel("PROFILE");
         usersBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usersBtnActionPerformed(evt);
