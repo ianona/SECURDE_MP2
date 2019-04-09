@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +29,8 @@ public class SQLite {
     public int DEBUG_MODE = 0;
     String driverURL = "jdbc:sqlite:" + "database.db";
 //    private Logger logger;
-    
-    public SQLite(){
+
+    public SQLite() {
         SecurityConfig.readDebugMode(this);
 //        System.out.println(DEBUG_MODE + " Debug mode");
     }
@@ -304,7 +305,7 @@ public class SQLite {
 //                        rs.getInt("stock"),
 //                        rs.getDouble("price"),
 //                        rs.getString("timestamp")));
-                  histories.add(toHistory(rs));
+                histories.add(toHistory(rs));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -352,6 +353,36 @@ public class SQLite {
         return logs;
     }
 
+    public Logs getLogByUsernameTimestampIp(String username, Timestamp timestamp, String ip) {
+        String sql = "SELECT id, event, username, desc, timestamp, ip FROM logs WHERE username = ? and timestamp = ? and ip = ?";
+        ArrayList<Logs> logs = new ArrayList<Logs>();
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                //                Statement stmt = conn.createStatement();
+
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+            System.out.println("FINDING LOG BY:\n" + username + "\n" + timestamp + "\n" + ip);
+            pstmt.setString(1, username);
+            pstmt.setString(2, timestamp.toString());
+            pstmt.setString(3, ip);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                logs.add(new Logs(rs.getInt("id"),
+                        rs.getString("event"),
+                        rs.getString("username"),
+                        rs.getString("desc"),
+                        rs.getString("timestamp"),
+                        rs.getString("ip")));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        System.out.println("FOUND " + logs.size() + " MATCHING LOGS");
+        return logs.isEmpty() || logs.size() > 1 ? null : logs.get(0);
+    }
+
     public ArrayList<Product> getProduct() {
         String sql = "SELECT id, name, stock, price FROM product ORDER BY name";
         ArrayList<Product> products = new ArrayList<Product>();
@@ -371,36 +402,34 @@ public class SQLite {
         }
         return products;
     }
-    
-    public void sellProduct(String productname, int newstock)
-    {
+
+    public void sellProduct(String productname, int newstock) {
         String sql = "UPDATE product SET stock=? WHERE name=?";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
                 PreparedStatement pstmt = conn.prepareStatement(sql);) {
 //            stmt.execute(sql);
-              pstmt.setInt(1, newstock);
-              pstmt.setString(2, productname);
-              pstmt.executeUpdate();
+            pstmt.setInt(1, newstock);
+            pstmt.setString(2, productname);
+            pstmt.executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
-    public void editProduct(String oldproductname, String productname, int newstock, double newprice)
-    {
+
+    public void editProduct(String oldproductname, String productname, int newstock, double newprice) {
         String sql = "UPDATE product SET name=?, stock=?, price=? WHERE name=?";
 
         try (Connection conn = DriverManager.getConnection(driverURL);
                 //                Statement stmt = conn.createStatement()
                 PreparedStatement pstmt = conn.prepareStatement(sql);) {
 //            stmt.execute(sql);
-              pstmt.setString(1, productname);
-              pstmt.setInt(2, newstock);
-              pstmt.setDouble(3, newprice);
-              pstmt.setString(4, oldproductname);
-              pstmt.executeUpdate();
+            pstmt.setString(1, productname);
+            pstmt.setInt(2, newstock);
+            pstmt.setDouble(3, newprice);
+            pstmt.setString(4, oldproductname);
+            pstmt.executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -442,7 +471,7 @@ public class SQLite {
         }
         return product;
     }
-    
+
     public ArrayList<User> getUsersByUsername(String username) {
         username = username.toLowerCase();
         String sql = "SELECT id, username, password, role, locked FROM users WHERE username = ?";
@@ -473,9 +502,8 @@ public class SQLite {
         String sql = "SELECT id, username, password, role, locked FROM users where username = ? and password = ?";
         try (Connection conn = DriverManager.getConnection(driverURL); //                Statement stmt = conn.createStatement();
                 //                ResultSet rs = stmt.executeQuery(sql)
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ) {
-            
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
             pstmt.setString(1, username);
             pstmt.setString(2, hashPassword);
             ResultSet rs = pstmt.executeQuery();
@@ -489,55 +517,52 @@ public class SQLite {
         }
         return users;
     }
-    
+
     // updates user role, finds by username
     public boolean updateRoleByUsername(String username, int role) {
-        String sql = 	"UPDATE users SET role = ? WHERE username = ?";
+        String sql = "UPDATE users SET role = ? WHERE username = ?";
         try (
                 Connection conn = DriverManager.getConnection(driverURL);
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-        ) {
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
             pstmt.setInt(1, role);
             pstmt.setString(2, username);
             pstmt.executeUpdate();
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-        } 
+        }
         return false;
     }
-    
+
     // updates locked status, finds by username
     public boolean updateLockedByUsername(String username, int locked) {
-        String sql = 	"UPDATE users SET locked = ? WHERE username = ?";
+        String sql = "UPDATE users SET locked = ? WHERE username = ?";
         try (
                 Connection conn = DriverManager.getConnection(driverURL);
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-        ) {
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
             pstmt.setInt(1, locked);
             pstmt.setString(2, username);
             pstmt.executeUpdate();
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-        } 
+        }
         return false;
     }
-    
+
     // updates user password, finds by username
     public boolean updatePasswordByUsername(String username, String password) {
-        String sql = 	"UPDATE users SET password = ? WHERE username = ?";
+        String sql = "UPDATE users SET password = ? WHERE username = ?";
         try (
                 Connection conn = DriverManager.getConnection(driverURL);
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-        ) {
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
             pstmt.setString(1, SecurityConfig.hash(password));
             pstmt.setString(2, username);
             pstmt.executeUpdate();
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-        } 
+        }
         return false;
     }
 
@@ -557,7 +582,7 @@ public class SQLite {
             ex.printStackTrace();
         }
     }
-    
+
     public void removeLogs(Logs log) {
 //        String sql = "DELETE FROM users WHERE username='" + username + "';";
         String sql = "DELETE FROM logs WHERE event = ? and username = ? and desc = ? and timestamp = ?";
@@ -570,10 +595,28 @@ public class SQLite {
             pstmt.setString(1, log.getEvent());
             pstmt.setString(2, log.getUsername());
             pstmt.setString(3, log.getDesc());
-            pstmt.setString(4, log.getTimestamp()+"");
+            pstmt.setString(4, log.getTimestamp() + "");
 //            pstmt.setString(5, log.getIp());
             pstmt.executeUpdate();
             System.out.println("Event Log " + log.getEvent() + " has been deleted.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void removeLogById(int id) {
+//        String sql = "DELETE FROM users WHERE username='" + username + "';";
+        String sql = "DELETE FROM logs WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(driverURL);
+                //                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+//            stmt.execute(sql);
+
+            pstmt.setInt(1, id);
+//            pstmt.setString(5, log.getIp());
+            pstmt.executeUpdate();
+            System.out.println("Event Log " + id + " has been deleted.");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -595,7 +638,7 @@ public class SQLite {
             ex.printStackTrace();
         }
     }
-    
+
     public Product getProduct(String name) {
         String sql = "SELECT name, stock, price FROM product WHERE name='" + name + " ORDER BY name';";
         Product product = null;
