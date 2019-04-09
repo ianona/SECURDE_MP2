@@ -353,7 +353,7 @@ public class SQLite {
     }
 
     public ArrayList<Product> getProduct() {
-        String sql = "SELECT id, name, stock, price FROM product";
+        String sql = "SELECT id, name, stock, price FROM product ORDER BY name";
         ArrayList<Product> products = new ArrayList<Product>();
 
         try (Connection conn = DriverManager.getConnection(driverURL);
@@ -407,7 +407,7 @@ public class SQLite {
     }
 
     public ArrayList<User> getUsers() {
-        String sql = "SELECT id, username, password, role, locked FROM users";
+        String sql = "SELECT id, username, password, role, locked FROM users ORDER BY username";
         ArrayList<User> users = new ArrayList<User>();
 
         try (Connection conn = DriverManager.getConnection(driverURL);
@@ -571,6 +571,7 @@ public class SQLite {
             pstmt.setString(2, log.getUsername());
             pstmt.setString(3, log.getDesc());
             pstmt.setString(4, log.getTimestamp()+"");
+//            pstmt.setString(5, log.getIp());
             pstmt.executeUpdate();
             System.out.println("Event Log " + log.getEvent() + " has been deleted.");
         } catch (Exception ex) {
@@ -596,7 +597,7 @@ public class SQLite {
     }
     
     public Product getProduct(String name) {
-        String sql = "SELECT name, stock, price FROM product WHERE name='" + name + "';";
+        String sql = "SELECT name, stock, price FROM product WHERE name='" + name + " ORDER BY name';";
         Product product = null;
         try (Connection conn = DriverManager.getConnection(driverURL);
                 Statement stmt = conn.createStatement();

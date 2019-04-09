@@ -107,7 +107,7 @@ public class MgmtUser extends javax.swing.JPanel {
         }
         
         //sorting table
-        table.setAutoCreateRowSorter(true);
+//        table.setAutoCreateRowSorter(true);
 
         //      LOAD CONTENTS
         List<User> users = sqlite.getUsers();

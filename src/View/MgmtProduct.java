@@ -58,48 +58,48 @@ public class MgmtProduct extends javax.swing.JPanel {
                 products.get(nCtr).getStock(),
                 products.get(nCtr).getPrice()});
         }
-        // sorting of table
-        class IntComparator implements Comparator {
-
-            public int compare(Object o1, Object o2) {
-                Integer int1 = (Integer) o1;
-                Integer int2 = (Integer) o2;
-                return int1.compareTo(int2);
-            }
-
-            public boolean equals(Object o2) {
-                return this.equals(o2);
-            }
-        }
-        class FloatComparator implements Comparator {
-
-            public int compare(Object o1, Object o2) {
-                Float int1 = (Float) o1;
-                Float int2 = (Float) o2;
-                return int1.compareTo(int2);
-            }
-
-            public boolean equals(Object o2) {
-                return this.equals(o2);
-            }
-        }
-        class StringComparator implements Comparator {
-
-            public int compare(Object o1, Object o2) {
-                String int1 = (String) o1;
-                String int2 = (String) o2;
-                return int1.compareTo(int2);
-            }
-
-            public boolean equals(Object o2) {
-                return this.equals(o2);
-            }
-        }
-        TableRowSorter trs = new TableRowSorter(table.getModel());
-        trs.setComparator(0, new StringComparator());
-        trs.setComparator(1, new IntComparator());
-        trs.setComparator(2, new FloatComparator());
-        table.setRowSorter(trs);
+//        // sorting of table
+//        class IntComparator implements Comparator {
+//
+//            public int compare(Object o1, Object o2) {
+//                Integer int1 = (Integer) o1;
+//                Integer int2 = (Integer) o2;
+//                return int1.compareTo(int2);
+//            }
+//
+//            public boolean equals(Object o2) {
+//                return this.equals(o2);
+//            }
+//        }
+//        class FloatComparator implements Comparator {
+//
+//            public int compare(Object o1, Object o2) {
+//                Float int1 = (Float) o1;
+//                Float int2 = (Float) o2;
+//                return int1.compareTo(int2);
+//            }
+//
+//            public boolean equals(Object o2) {
+//                return this.equals(o2);
+//            }
+//        }
+//        class StringComparator implements Comparator {
+//
+//            public int compare(Object o1, Object o2) {
+//                String int1 = (String) o1;
+//                String int2 = (String) o2;
+//                return int1.compareTo(int2);
+//            }
+//
+//            public boolean equals(Object o2) {
+//                return this.equals(o2);
+//            }
+//        }
+//        TableRowSorter trs = new TableRowSorter(table.getModel());
+//        trs.setComparator(0, new StringComparator());
+//        trs.setComparator(1, new IntComparator());
+//        trs.setComparator(2, new FloatComparator());
+//        table.setRowSorter(trs);
         purchaseBtn.setVisible(true);
         addBtn.setVisible(true);
         editBtn.setVisible(true);
