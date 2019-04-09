@@ -1,2 +1,4 @@
-Apr 07, 2019 4:23:35 PM View.MgmtLogs clearBtnActionPerformed
-INFO: Event: NOTICE Username: admin Desc: User creation successful Timestamp: 3/27/19 11:53 PM
+Apr 09, 2019 1:32:15 PM View.MgmtLogs clearBtnActionPerformed
+INFO: Event: NOTICE Username: admin Desc: Changed role of staff from 4-MANAGER to 3-STAFF Timestamp: 4/9/19 1:31 PM
+Apr 09, 2019 1:32:15 PM View.MgmtLogs clearBtnActionPerformed
+INFO: Event: NOTICE Username: admin Desc: Changed role of staff from 3-STAFF to 4-MANAGER Timestamp: 4/9/19 1:31 PM

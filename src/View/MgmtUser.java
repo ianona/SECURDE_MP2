@@ -255,7 +255,9 @@ public class MgmtUser extends javax.swing.JPanel {
             options.add("2-CLIENT");
             options.add("3-STAFF");
             options.add("4-MANAGER");
-            if (Frame.getCurUser().getRole() == 5) options.add("5-ADMIN");
+            if (Frame.getCurUser().getRole() == 5) {
+                options.add("5-ADMIN");
+            }
             JComboBox optionList = new JComboBox(options.toArray(new String[0]));
 
             String username = tableModel.getValueAt(table.getSelectedRow(), 0).toString();
@@ -266,7 +268,7 @@ public class MgmtUser extends javax.swing.JPanel {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            
+
             int curRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
             optionList.setSelectedIndex(curRole - 2);
             String result = (String) JOptionPane.showInputDialog(null, "USER: " + tableModel.getValueAt(table.getSelectedRow(), 0),
@@ -276,6 +278,15 @@ public class MgmtUser extends javax.swing.JPanel {
                 int newRole = Integer.parseInt(result.substring(0, 1));
                 if (curRole == newRole) {
                     return;
+                }
+                if (newRole == 5) {
+                    if (!reauthenticate("Confirm password before promoting to admin")) {
+                        JOptionPane.showMessageDialog(null,
+                            "Invalid password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
                 }
                 System.out.println("Changing role of " + username + " to " + newRole);
                 sqlite.updateRoleByUsername(username, newRole);
@@ -306,14 +317,21 @@ public class MgmtUser extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, deleteMsg, "DELETE USER", JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION) {
-                for (int i = 0; i < table.getSelectedRows().length; i++) {
-                    String username = tableModel.getValueAt(table.getSelectedRows()[i], 0).toString();
-                    User toDelete = sqlite.getUsersByUsername(username).get(0);
-                    sqlite.removeUser(username);
-                    SecurityConfig.updateUserArchive(toDelete);
-                    SecurityConfig.log(sqlite, 0, "NOTICE", "Archived and deleted the account of " + username);
+                if (reauthenticate("Confirm password before proceeding")) {
+                    for (int i = 0; i < table.getSelectedRows().length; i++) {
+                        String username = tableModel.getValueAt(table.getSelectedRows()[i], 0).toString();
+                        User toDelete = sqlite.getUsersByUsername(username).get(0);
+                        sqlite.removeUser(username);
+                        SecurityConfig.updateUserArchive(toDelete);
+                        SecurityConfig.log(sqlite, 0, "NOTICE", "Archived and deleted the account of " + username);
+                    }
+                    init();
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
                 }
-                init();
             }
         }
     }//GEN-LAST:event_deleteBtnActionPerformed
@@ -406,6 +424,22 @@ public class MgmtUser extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_chgpassBtnActionPerformed
 
+    private boolean reauthenticate(String msg) {
+        JTextField password = new JPasswordField();
+        designer(password, "PASSWORD");
+        Object[] message = {
+            msg,
+            password
+        };
+        int result = JOptionPane.showConfirmDialog(null, message, "CHANGE PASSWORD", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
+        if (result == JOptionPane.OK_OPTION) {
+            if (SecurityConfig.hash(password.getText()).equals(Frame.getCurUser().getPassword())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton chgpassBtn;
