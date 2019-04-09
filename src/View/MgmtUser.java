@@ -75,6 +75,13 @@ public class MgmtUser extends javax.swing.JPanel {
                 lockBtn.setVisible(false);
                 editRoleBtn.setVisible(false);
             }
+            if (curUser.getRole() == 4) {
+                deleteBtn.setVisible(false);
+                if (selectedRole == 4) {
+                    lockBtn.setVisible(false);
+                    editRoleBtn.setVisible(false);
+                }
+            }
         });
 
 //        UNCOMMENT TO DISABLE BUTTONS
@@ -298,6 +305,15 @@ public class MgmtUser extends javax.swing.JPanel {
                         return;
                     }
                 }
+                if (curRole == 5) {
+                    if (!reauthenticate("Confirm password before demoting admin")) {
+                        JOptionPane.showMessageDialog(null,
+                            "Invalid password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
                 System.out.println("Changing role of " + username + " to " + newRole);
                 sqlite.updateRoleByUsername(username, newRole);
                 init();
@@ -363,7 +379,17 @@ public class MgmtUser extends javax.swing.JPanel {
             }
             int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to " + state + " " + username + "?", "DELETE USER", JOptionPane.YES_NO_OPTION);
 
+            int curRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
             if (result == JOptionPane.YES_OPTION) {
+                if (curRole == 5) {
+                    if (!reauthenticate("Confirm password before locking/unlocking admin")) {
+                        JOptionPane.showMessageDialog(null,
+                            "Invalid password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
                 System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
                 sqlite.updateLockedByUsername(username, state.equalsIgnoreCase("lock") ? 1 : 0);
                 init();
@@ -426,6 +452,17 @@ public class MgmtUser extends javax.swing.JPanel {
                             JOptionPane.WARNING_MESSAGE);
                     SecurityConfig.log(sqlite, 1, "FAILED ATTEMPT", "Failed attempt to change the password of " + username + " due to new password being same as old password");
                     return;
+                }
+                
+                int curRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
+                if (curRole == 5) {
+                    if (!reauthenticate("Confirm password before chaing password of admin")) {
+                        JOptionPane.showMessageDialog(null,
+                            "Invalid password",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
                 }
 
                 sqlite.updatePasswordByUsername(username, password.getText());
