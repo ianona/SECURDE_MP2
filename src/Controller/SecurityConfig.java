@@ -7,6 +7,7 @@ package Controller;
 
 import Model.User;
 import View.Frame;
+import static View.MgmtUser.designer;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -31,6 +32,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 /**
  *
@@ -266,5 +270,22 @@ public class SecurityConfig {
         System.out.println(encryptAES(temp));
 
         System.out.println(decryptAES(encryptAES(temp)));
+    }
+    
+    public static boolean reauthenticate(String msg) {
+        JTextField password = new JPasswordField();
+        designer(password, "PASSWORD");
+        Object[] message = {
+            msg,
+            password
+        };
+        int result = JOptionPane.showConfirmDialog(null, message, "CHANGE PASSWORD", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
+        if (result == JOptionPane.OK_OPTION) {
+            if (SecurityConfig.hash(password.getText()).equals(Frame.getCurUser().getPassword())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

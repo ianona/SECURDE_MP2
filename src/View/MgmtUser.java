@@ -144,7 +144,7 @@ public class MgmtUser extends javax.swing.JPanel {
         }
     }
 
-    public void designer(JTextField component, String text) {
+    public static void designer(JTextField component, String text) {
         component.setSize(70, 600);
         component.setFont(new java.awt.Font("Tahoma", 0, 18));
         component.setBackground(new java.awt.Color(240, 240, 240));
@@ -297,7 +297,7 @@ public class MgmtUser extends javax.swing.JPanel {
                     return;
                 }
                 if (newRole == 5) {
-                    if (!reauthenticate("Confirm password before promoting to admin")) {
+                    if (!SecurityConfig.reauthenticate("Confirm password before promoting to admin")) {
                         JOptionPane.showMessageDialog(null,
                             "Invalid password",
                             "Error",
@@ -306,7 +306,7 @@ public class MgmtUser extends javax.swing.JPanel {
                     }
                 }
                 if (curRole == 5) {
-                    if (!reauthenticate("Confirm password before demoting admin")) {
+                    if (!SecurityConfig.reauthenticate("Confirm password before demoting admin")) {
                         JOptionPane.showMessageDialog(null,
                             "Invalid password",
                             "Error",
@@ -343,7 +343,7 @@ public class MgmtUser extends javax.swing.JPanel {
             int result = JOptionPane.showConfirmDialog(null, deleteMsg, "DELETE USER", JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION) {
-                if (reauthenticate("Confirm password before proceeding")) {
+                if (SecurityConfig.reauthenticate("Confirm password before proceeding")) {
                     for (int i = 0; i < table.getSelectedRows().length; i++) {
                         String username = tableModel.getValueAt(table.getSelectedRows()[i], 0).toString();
                         User toDelete = sqlite.getUsersByUsername(username).get(0);
@@ -382,7 +382,7 @@ public class MgmtUser extends javax.swing.JPanel {
             int curRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
             if (result == JOptionPane.YES_OPTION) {
                 if (curRole == 5) {
-                    if (!reauthenticate("Confirm password before locking/unlocking admin")) {
+                    if (!SecurityConfig.reauthenticate("Confirm password before locking/unlocking admin")) {
                         JOptionPane.showMessageDialog(null,
                             "Invalid password",
                             "Error",
@@ -456,7 +456,7 @@ public class MgmtUser extends javax.swing.JPanel {
                 
                 int curRole = Integer.parseInt(tableModel.getValueAt(table.getSelectedRow(), 1).toString().substring(0, 1));
                 if (curRole == 5) {
-                    if (!reauthenticate("Confirm password before chaing password of admin")) {
+                    if (!SecurityConfig.reauthenticate("Confirm password before chaing password of admin")) {
                         JOptionPane.showMessageDialog(null,
                             "Invalid password",
                             "Error",
@@ -471,22 +471,7 @@ public class MgmtUser extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_chgpassBtnActionPerformed
 
-    private boolean reauthenticate(String msg) {
-        JTextField password = new JPasswordField();
-        designer(password, "PASSWORD");
-        Object[] message = {
-            msg,
-            password
-        };
-        int result = JOptionPane.showConfirmDialog(null, message, "CHANGE PASSWORD", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
-        if (result == JOptionPane.OK_OPTION) {
-            if (SecurityConfig.hash(password.getText()).equals(Frame.getCurUser().getPassword())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton chgpassBtn;
