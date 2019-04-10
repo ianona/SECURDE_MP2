@@ -334,6 +334,13 @@ public class MgmtUser extends javax.swing.JPanel {
                             JOptionPane.WARNING_MESSAGE);
                     return;
                 }
+                if (username.equals(SecurityConfig.ADMIN)){
+                    JOptionPane.showMessageDialog(null,
+                            "Cannot delete admin",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 deleteMsg += username;
                 if (i != table.getSelectedRows().length - 1) {
                     deleteMsg += ", ";

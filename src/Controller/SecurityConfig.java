@@ -45,6 +45,7 @@ public class SecurityConfig {
 //AES 256 Encryption secret code
     private final String secretKey = "fritz'sbestsquad";
     private final String salt = "choonapena";
+    public static final String ADMIN = "admin";
 
     public static String hash(String password) {
         //link to how to do SHA-512 encryption (https://www.geeksforgeeks.org/sha-512-hash-in-java/)
