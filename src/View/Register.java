@@ -122,8 +122,9 @@ public class Register extends javax.swing.JPanel {
 
         if (database.getUsersByUsername(username.getText()).isEmpty()) {
             List<String> errors = SecurityConfig.checkPassword(username.getText(), password.getText(), confpass.getText());
+            boolean userChecker = SecurityConfig.checkUsername(username.getText());
             //if all of the condition checks, it stores the password
-            if (errors.size() == 0) {
+            if (errors.size() == 0 && userChecker) {
                 errorLbl.setVisible(false);
                 String userName = username.getText();
                 String passWord = password.getText();
@@ -138,8 +139,14 @@ public class Register extends javax.swing.JPanel {
                 Frame.setCurUser(null);
             } else {
                 System.out.println(errors.size());
-                errorLbl.setText(errors.get(errors.size()-1));
-                errorLbl.setVisible(true);
+                if (errors.size() > 0) {
+                    errorLbl.setText(errors.get(errors.size() - 1));
+                    errorLbl.setVisible(true);
+                } else if (!userChecker) {
+                    errorLbl.setText("INVALID USERNAME");
+                    errorLbl.setVisible(true);
+                }
+
             }
         } else {
             System.out.println("CHOOSE UNIQUE USERNAME");
