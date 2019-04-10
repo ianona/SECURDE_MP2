@@ -314,7 +314,7 @@ public class MgmtUser extends javax.swing.JPanel {
                         return;
                     }
                 }
-                System.out.println("Changing role of " + username + " to " + newRole);
+//                System.out.println("Changing role of " + username + " to " + newRole);
                 sqlite.updateRoleByUsername(username, newRole);
                 init();
                 SecurityConfig.log(sqlite, 0, "NOTICE", "Changed role of " + username + " from " + options.toArray(new String[0])[curRole - 2] + " to " + options.toArray(new String[0])[newRole - 2]);
@@ -390,7 +390,7 @@ public class MgmtUser extends javax.swing.JPanel {
                         return;
                     }
                 }
-                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
+//                System.out.println(tableModel.getValueAt(table.getSelectedRow(), 0));
                 sqlite.updateLockedByUsername(username, state.equalsIgnoreCase("lock") ? 1 : 0);
                 init();
                 SecurityConfig.log(sqlite, 0, "NOTICE", state.substring(0, 1).toUpperCase() + state.substring(1) + "ed account of " + username);

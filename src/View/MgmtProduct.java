@@ -362,7 +362,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                 if (curDecnum) {
                                     price = Double.parseDouble(newprice);
                                     price = Math.floor(price * 100) / 100;
-                                    System.out.println(price);
+//                                    System.out.println(price);
 
                                     popupmessage("Product Added Successful!");
 
@@ -373,7 +373,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                 } else if (curPernum) {
                                     price = Double.parseDouble(newprice);
                                     price = Math.floor(price * 100) / 100;
-                                    System.out.println(price);
+//                                    System.out.println(price);
 
                                     popupmessage("Product Added Successful!");
 
@@ -384,7 +384,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                 } else if (curAllnum) {
                                     price = Double.parseDouble(newprice);
                                     price = Math.floor(price * 100) / 100;
-                                    System.out.println(price);
+//                                    System.out.println(price);
 
                                     popupmessage("Product Added Successful!");
 
@@ -451,12 +451,12 @@ public class MgmtProduct extends javax.swing.JPanel {
                         if (isAtMax32) {
                             try {
                                 if (onlyNumber && Integer.parseInt(newnumstock) >= 0 && Double.parseDouble(newprice) >= 0) {
-                                    System.out.println(stockFld.getText().replaceFirst("^0+(?!$)", ""));
+//                                    System.out.println(stockFld.getText().replaceFirst("^0+(?!$)", ""));
 
                                     if (curDecnum) {
                                         price = Double.parseDouble(newprice);
                                         price = Math.floor(price * 100) / 100;
-                                        System.out.println(price);
+//                                        System.out.println(price);
 
                                         popupmessage("Edit Successful!");
 
@@ -467,7 +467,7 @@ public class MgmtProduct extends javax.swing.JPanel {
                                     } else if (curPernum) {
                                         price = Double.parseDouble(newprice);
                                         price = Math.floor(price * 100) / 100;
-                                        System.out.println(price);
+//                                        System.out.println(price);
 
                                         popupmessage("Edit Successful!");
 

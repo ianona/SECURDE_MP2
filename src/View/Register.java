@@ -138,7 +138,7 @@ public class Register extends javax.swing.JPanel {
                 SecurityConfig.log(database, 0, "NOTICE", "Successfully registered for an account");
                 Frame.setCurUser(null);
             } else {
-                System.out.println(errors.size());
+//                System.out.println(errors.size());
                 if (errors.size() > 0) {
                     errorLbl.setText(errors.get(errors.size() - 1));
                     errorLbl.setVisible(true);
@@ -149,7 +149,7 @@ public class Register extends javax.swing.JPanel {
 
             }
         } else {
-            System.out.println("CHOOSE UNIQUE USERNAME");
+//            System.out.println("CHOOSE UNIQUE USERNAME");
             errorLbl.setText("Username is taken");
             errorLbl.setVisible(true);
         }

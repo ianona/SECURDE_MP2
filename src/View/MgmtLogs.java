@@ -213,10 +213,10 @@ public class MgmtLogs extends javax.swing.JPanel {
                     e.printStackTrace();
                 }
 
-                System.out.println("LOGLIST SIZE: " + logsList.size());
+//                System.out.println("LOGLIST SIZE: " + logsList.size());
                 for (int i = 0; i < logsList.size(); i++) {
 
-                    System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp()  + " IP: " + logsList.get(i).getIp());
+//                    System.out.println("Event: " +logsList.get(i).getEvent() + " Username: " +logsList.get(i).getUsername() + " Desc: " + logsList.get(i).getDesc() + " Timestamp: " + logsList.get(i).getTimestamp()  + " IP: " + logsList.get(i).getIp());
 //                  logger.log(Level.INFO, "Event: {0} Username: {1} Desc: {2} Timestamp: {3}", new Object[]{logsList.get(i).getEvent(), logsList.get(i).getUsername(), logsList.get(i).getDesc(), logsList.get(i).getTimestamp()});
 
                     sqlite.removeLogs(logsList.get(i));

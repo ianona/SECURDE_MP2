@@ -167,7 +167,7 @@ public class Login extends javax.swing.JPanel {
                 SecurityConfig.log(connection, 0, "NOTICE", "Successfully logged in");
 //                logger.info("Logged in as " + users.get(0).getUsername());
             } else {
-                System.out.println("LOGIN ERROR: Account is locked");
+//                System.out.println("LOGIN ERROR: Account is locked");
 //                logger.info("LOGIN ERROR: Account is disabled");
                 errorLbl.setText("Error! Account is locked");
                 errorLbl.setVisible(true);
@@ -176,8 +176,8 @@ public class Login extends javax.swing.JPanel {
                 Frame.setCurUser(null);
             }
         } else {
-            System.out.println("USERS SIZE:" + users.size());
-            System.out.println("LOGIN ERROR: Invalid Credentials");
+//            System.out.println("USERS SIZE:" + users.size());
+//            System.out.println("LOGIN ERROR: Invalid Credentials");
 //            logger.info("LOGIN ERROR: Invalid Credentials");
             attempts++;
             errorLbl.setText("Error! Invalid credentials");

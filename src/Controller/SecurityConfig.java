@@ -91,32 +91,32 @@ public class SecurityConfig {
         }
         //checks if has 1 upper case letter
         if (!hasUppercase) {
-            System.out.println("NO UPPER CASE");
+//            System.out.println("NO UPPER CASE");
             errors.add("Error! Password requires at least 1 uppercase character");
         }
         //checks if has 1 lower case letter
         if (!hasLowercase) {
-            System.out.println("NO LOWER CASE");
+//            System.out.println("NO LOWER CASE");
             errors.add("Error! Password requires at least 1 lowercase character");
         }
         //check if it has at least 8 characters
         if (!isAtLeast8) {
-            System.out.println("NOT MORE THAN 8 CHAR");
+//            System.out.println("NOT MORE THAN 8 CHAR");
             errors.add("Error! Password requires at least 8 characters");
         }
         //check if it has number
         if (!hasNumber) {
-            System.out.println("NO NUMBER");
+//            System.out.println("NO NUMBER");
             errors.add("Error! Password requires at least 1 number");
         }
         //check if it has special characters
         if (!hasSpecial) {
-            System.out.println("NOT SPECIAL");
+//            System.out.println("NOT SPECIAL");
             errors.add("Error! Password requires at least 1 special character");
         }
         //check if is too long
         if (password.length() >= 128 ){
-            System.out.println("MORE THAN 128 CHARACTERS");
+//            System.out.println("MORE THAN 128 CHARACTERS");
             errors.add("Error! Password has more than 128 characters");
         }
         return errors;
@@ -213,7 +213,7 @@ public class SecurityConfig {
             return;
         }
         String time = new Timestamp(new Date().getTime()).toString();
-        System.out.println("TIME NOW: " + time);
+//        System.out.println("TIME NOW: " + time);
         if (time.length() == 22) {
             time = time + "0";
         }
@@ -250,7 +250,7 @@ public class SecurityConfig {
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
 //            System.out.println("Error while encrypting: " + e.toString());
-              e.printStackTrace();
+//              e.printStackTrace();
         }
         return null;
     }
@@ -271,17 +271,17 @@ public class SecurityConfig {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
+//            System.out.println("Error while decrypting: " + e.toString());
         }
         return null;
     }
 
     public void testingAES() {
         String temp = "This is the best whatever chuchu";
-
-        System.out.println(encryptAES(temp));
-
-        System.out.println(decryptAES(encryptAES(temp)));
+//
+//        System.out.println(encryptAES(temp));
+//
+//        System.out.println(decryptAES(encryptAES(temp)));
     }
     
     public static boolean reauthenticate(String msg) {
